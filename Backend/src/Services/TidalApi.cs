@@ -16,7 +16,7 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
 
     private static readonly MemoryCacheEntryOptions CacheOptions = new MemoryCacheEntryOptions
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
     };
 
     public async Task<List<IHarbor>> GetHarborsAsync()

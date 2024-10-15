@@ -1,13 +1,14 @@
-import { Nav, NavLink, NavMenu } from "./NavbarStyle";
+import { Nav, NavLink, NavMenu, Title } from "./NavbarStyle";
 
 const Navbar = () => {
   return (
     <>
       <Nav>
+        <Title>Weather App</Title>
         <NavMenu>
-          <NavLink to="/">Tidal Water</NavLink>
-          <NavLink to="/">Test1</NavLink>
-          <NavLink to="/">Test2</NavLink>
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="/tidal-water">Tidal Water</NavLink>
+          <NavLink to="/temperature">Temperature</NavLink>
         </NavMenu>
       </Nav>
     </>

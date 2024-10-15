@@ -23,7 +23,8 @@ export type ChartData = {
 };
 
 export type BlockData = {
-  id: string;
+  id: number;
+  enabled: boolean;
   value: Harbor | undefined;
   data: ChartData[];
 };

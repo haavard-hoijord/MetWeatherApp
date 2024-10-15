@@ -1,45 +1,51 @@
 import styled from "styled-components";
 import { NavLink as Link } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
 
+// Nav: The container for the entire navigation bar
 export const Nav = styled.nav`
-  background: darkgray;
-  height: 85px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 12;
-  width: 100%;
+  background-color: #333; /* Dark gray background for the navbar */
+  height: auto;
+  padding: 20px 20px;
+  box-shadow: 0px 4px 2px -2px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 `;
 
-export const NavLink = styled(Link)`
-  color: #808080;
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  padding: 0 1rem;
-  height: 100%;
-  cursor: pointer;
-`;
-
-export const Bars = styled(FaBars)`
-  display: none;
-  color: #808080;
-  @media screen and (max-width: 768px) {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(-100%, 75%);
-    font-size: 1.8rem;
-    cursor: pointer;
-  }
-`;
-
+// NavMenu: A container for the navigation links (usually in a row)
 export const NavMenu = styled.div`
   display: flex;
   align-items: center;
-  margin-right: -24px;
-  @media screen and (max-width: 768px) {
-    display: none;
+  gap: 20px; /* Space between nav links */
+`;
+
+// NavLink: Each button/link inside the NavMenu, styling react-router-dom's NavLink component
+export const NavLink = styled(Link)`
+  color: #90caf9; /* Muted blue color for the links */
+  text-decoration: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+
+  &.active {
+    background-color: #555; /* Highlight for the active link */
+    color: #ffffff;
   }
+
+  &:hover {
+    background-color: #555; /* Slightly lighter gray on hover */
+    color: #ffffff; /* Turn text white on hover */
+  }
+
+  &:active {
+    background-color: #444; /* Even lighter gray for active state */
+  }
+`;
+
+// Title: The title of the website, displayed above the buttons
+export const Title = styled.h1`
+  color: #fff;
+  font-size: 24px;
+  margin: 0 0 25px;
 `;

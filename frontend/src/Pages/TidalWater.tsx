@@ -3,16 +3,17 @@ import { Harbor } from "../types/Harbor";
 import { BlockData, ChartData } from "../types/TidalWater";
 import axios from "axios";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Label,
-  Line,
-  LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import "./TidalWater.css";
 import { TidalWater } from "../types/TidalWater";
+import LocationContainer from "../components/LocationBlocks.tsx";
 
 const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
   const [harbors, setHarbors] = useState<Harbor[]>([]);
@@ -35,10 +36,22 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
 
   useEffect(() => {
     fetchHarbors();
-    if (!blocks || blocks.length === 0) {
-      addBlock(null);
-    }
   }, []);
+
+  useEffect(() => {
+    if (harbors.length > 0) {
+      if (!blocks || blocks.length === 0) {
+        addBlock(null);
+      }
+    }
+  }, [harbors]);
+
+  useEffect(() => {
+    if (blocks.length === 1 && blocks[0].data.length === 0) {
+      blocks[0].value = harbors[0];
+      updateData();
+    }
+  }, [blocks]);
 
   const colors: string[] = [
     "#64B5F6", // Medium Blue
@@ -63,57 +76,95 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
     "#FFAB91", // Light Coral Orange
   ];
 
-  const mergeData = (lines: Array<{ time: string; level: number }[]>) => {
+  const mergeData = (data: BlockData[]) => {
     const mergedData: Record<string, any> = {};
 
-    lines.forEach((line, index) => {
-      line.forEach(({ time, level }) => {
-        if (!mergedData[time]) {
-          mergedData[time] = { time };
+    for (let datum of data) {
+      for (let datum1 of datum.data) {
+        if (!mergedData[datum1.time]) {
+          mergedData[datum1.time] = { time: datum1.time };
         }
-        mergedData[time][`level_${index}`] = level;
-      });
-    });
-
+        mergedData[datum1.time][`level_${datum.id}`] = datum1.level;
+      }
+    }
     return Object.values(mergedData);
+  };
+
+  //Calculate domain to increase the y-axis range by 20% in both directions
+  const calculateDomain = (
+    data: ChartData[],
+    multiplier: number = 1.1,
+  ): [number, number] => {
+    const values = data.map((item) => item.level);
+    const min = Math.min(...values) * multiplier;
+    const max = Math.max(...values) * multiplier;
+
+    return [
+      Math.min(parseFloat(min.toFixed(2)), -10),
+      Math.max(parseFloat(max.toFixed(2)), 10),
+    ];
   };
 
   const renderLineChart = (
     <div className="chart">
-      <LineChart
-        width={1200}
-        height={700}
-        margin={{ top: 5, right: 20, bottom: 90, left: 20 }}
-        data={mergeData(blocks?.map((block) => block.data) ?? [])}
-      >
-        {blocks &&
-          blocks.map((block) => {
-            return (
-              <Line
-                type="monotone"
-                stroke={colors[parseInt(block.id) % colors.length]}
-                dataKey={`level_${block.id}`}
-                dot={false}
-                name={block.value?.name}
-              />
-            );
-          })}
-        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-        <XAxis dataKey="time" minTickGap={20} angle={-60} dy={45} dx={-25}>
-          <Label value="Time" offset={-90} position="insideBottom" />
-        </XAxis>
-
-        <YAxis>
-          <Label value="Water level" angle={-90} position="middle" dx={-25} />
-        </YAxis>
-
-        {data.length > 0 && (
-          <Tooltip
-            contentStyle={{ backgroundColor: "gray" }}
-            wrapperStyle={{ color: "black" }}
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          margin={{ left: 10, right: 20, bottom: 90 }}
+          data={mergeData(blocks?.filter((s) => s.enabled) ?? [])}
+        >
+          <CartesianGrid
+            stroke="#44444444"
+            strokeDasharray={"5 5"}
+            fill={"#83838399"}
           />
-        )}
-      </LineChart>
+
+          {blocks &&
+            blocks.map((block) => {
+              return (
+                <Area
+                  type="monotone"
+                  stroke={colors[block.id % colors.length]}
+                  dataKey={`level_${block.id}`}
+                  dot={false}
+                  name={block.value?.name}
+                  key={block.id}
+                  fillOpacity={0.2}
+                  strokeOpacity={1}
+                  strokeWidth={2}
+                  fill={colors[block.id % colors.length]}
+                  baseValue="dataMin"
+                  connectNulls={true}
+                />
+              );
+            })}
+
+          <XAxis
+            dataKey="time"
+            minTickGap={20}
+            angle={-60}
+            dy={45}
+            dx={-25}
+            stroke="#000000"
+          />
+          <YAxis
+            unit="cm"
+            tickCount={20}
+            stroke="#000000"
+            domain={calculateDomain(data)}
+          />
+
+          {data.length > 0 && (
+            <Tooltip
+              animationDuration={0}
+              isAnimationActive={false}
+              itemSorter={(item: any) => -item.value}
+              formatter={(value: any) => `${value}cm`}
+              contentStyle={{ backgroundColor: "gray" }}
+              wrapperStyle={{ color: "black" }}
+            />
+          )}
+        </AreaChart>
+      </ResponsiveContainer>
       {loading && (
         <div className="loading-container">
           <div className="loading" />
@@ -141,12 +192,15 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
 
             blockHeightData.push({
               time: dateString,
-              level: value.surge,
+              level: parseFloat((value.surge * 100).toFixed(2)),
             });
           }
 
           block.data = blockHeightData;
-          heightData.push(...blockHeightData);
+
+          if (block.enabled) {
+            heightData.push(...blockHeightData);
+          }
         }
       }
     }
@@ -155,9 +209,9 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
     setLoading(false);
   };
 
-  const handleLocationChange = async (e: any, id: string) => {
+  const handleLocationChange = async (e: any, id: number) => {
     const selectedLocation = harbors.find(
-      (harbor) => harbor.name === e.target.value,
+      (harbor) => harbor.id === e.target.value,
     );
 
     if (blocks) {
@@ -171,17 +225,22 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
   };
 
   const addBlock = (e: any) => {
+    const availableNumbers = [...Array(colors.length).keys()].filter(
+      (num) => !blocks.some((s) => s.id === num), // Filter out numbers already in existingNumbers
+    );
+    const randomIndex = Math.floor(Math.random() * availableNumbers.length);
     setBlocks([
       ...blocks,
       {
-        id: (blocks ?? []).length.toString(),
+        id: availableNumbers[randomIndex],
         value: undefined,
         data: [],
+        enabled: true,
       },
     ]);
   };
 
-  const removeBlock = (id: string) => {
+  const removeBlock = (id: number) => {
     setBlocks((blocks ?? []).filter((block) => block.id !== id));
   };
 
@@ -193,43 +252,29 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
           {blocks &&
             blocks.map((block) => {
               return (
-                <div className="location-block" key={block.id}>
-                  <label htmlFor={`dropdown_${block.id}`}>
-                    Select a location:
-                  </label>
-                  <br />
-                  <select
-                    id={`dropdown_${block.id}`}
-                    value={block.value?.name}
-                    onChange={(e: any) => handleLocationChange(e, block.id)}
-                  >
-                    <option key="" value={undefined}></option>
-                    {harbors.map((harbor) => (
-                      <option key={harbor.id} value={harbor.name}>
-                        {harbor.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    className="remove-location"
-                    onClick={(e: any) => removeBlock(block.id)}
-                  >
-                    X
-                  </button>
-
-                  <div
-                    className="block-color"
-                    style={{
-                      backgroundColor:
-                        colors[parseInt(block.id) % colors.length],
-                    }}
-                  />
-                </div>
+                <LocationContainer
+                  block={block}
+                  blocks={blocks}
+                  color={colors[block.id % colors.length]}
+                  onClose={() => removeBlock(block.id)}
+                  onChange={(e: any) => handleLocationChange(e, block.id)}
+                  values={harbors}
+                  onToggle={(e: boolean, block: BlockData) => {
+                    const bl = blocks.find((bl) => bl.id === block.id);
+                    if (bl) {
+                      bl.enabled = e;
+                      updateData();
+                    }
+                  }}
+                />
               );
             })}
         </div>
-        <button className="add-location" onClick={addBlock}>
+        <button
+          className="add-location"
+          onClick={addBlock}
+          disabled={blocks.length >= colors.length}
+        >
           Add new location
         </button>
       </div>
