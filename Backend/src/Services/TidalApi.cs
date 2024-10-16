@@ -7,14 +7,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Backend.Services;
 
-public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITidalApi
+public partial class TidalApi(IWeatherApi<TidalWaterApiEndpoint> weatherApi, IMemoryCache cache) : ITidalApi
 {
-    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    private static readonly MemoryCacheEntryOptions CacheOptions = new MemoryCacheEntryOptions
+    private static readonly MemoryCacheEntryOptions CacheOptions = new()
     {
         AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
     };
@@ -23,18 +18,15 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
     {
         if (cache.TryGetValue("harborCache", out List<IHarbor>? harborData)) return harborData ?? [];
 
-        var response = await httpClient.GetAsync("locations");
-        response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync();
-        var harbors = JsonSerializer.Deserialize<LocationsDTO>(content, JsonSerializerOptions);
+        var harbors = await weatherApi.GetJsonAsync<LocationsDto>("locations");
 
-        harborData = harbors?.Features.Select(s => new Harbor
+        harborData = harbors.Features.Select(s => new Harbor
         {
             Position = new Coordinates(s.Geometry.Coordinates[0], s.Geometry.Coordinates[1]),
             PositionType = s.Geometry.Type,
             Name = s.Title,
             Id = s.Id
-        }).Cast<IHarbor>().ToList() ?? [];
+        }).Cast<IHarbor>().ToList();
         
         cache.Set("harborCache", harborData, CacheOptions);
 
@@ -53,17 +45,11 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
     [GeneratedRegex(@"={10,}\s*(.*?)\s*-{10,}", RegexOptions.Singleline)]
     private static partial Regex NameRegex();
 
-    public async Task<ITidalWaterDTO> GetTidalWaterAsync(string harborId)
+    public async Task<ITidalWaterDto> GetTidalWaterAsync(string harborId)
     {
-        if (cache.TryGetValue($"tidalCache_{harborId}", out ITidalWaterDTO? tidalData)) return tidalData!;
+        if (cache.TryGetValue($"tidalCache_{harborId}", out ITidalWaterDto? tidalData)) return tidalData!;
 
-        var request = new HttpRequestMessage(HttpMethod.Get, $"?harbor={harborId}");
-        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/plain"));
-        var response = await httpClient.SendAsync(request);
-
-        response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync();
+        var content = await weatherApi.GetDataAsync($"?harbor={harborId}");
         var lines = content.Split(["\r\n", "\r", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
         var name = "";
@@ -78,7 +64,7 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
             var timeString = match.Groups[2].Value;
 
             lastUpdated = DateTime.ParseExact($"{dateString} {timeString}", "yyyyMMdd HH:mm",
-                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
         // Extract the name using the NameRegex
@@ -94,10 +80,11 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
             .Select(s => DataLineColumnsRegex().Split(s))
             .Select(columns => new TidalValue
             {
-                TimeUTC = DateTime.ParseExact(
+                TimeUtc = DateTime.ParseExact(
                     $"{columns[0]}{columns[1].PadLeft(2, '0')}{columns[2].PadLeft(2, '0')} {columns[3].PadLeft(2, '0')}:{columns[4].PadLeft(2, '0')} {lastUpdated:zzz}",
                     "yyyyMMdd HH:mm zzz", CultureInfo.InvariantCulture),
                 Surge = double.Parse(columns[5], CultureInfo.InvariantCulture),
+                Tide = double.Parse(columns[6], CultureInfo.InvariantCulture),
                 Total = double.Parse(columns[7], CultureInfo.InvariantCulture),
                 P0 = double.Parse(columns[8], CultureInfo.InvariantCulture),
                 P25 = double.Parse(columns[9], CultureInfo.InvariantCulture),
@@ -106,7 +93,7 @@ public partial class TidalApi(HttpClient httpClient, IMemoryCache cache) : ITida
                 P100 = double.Parse(columns[12], CultureInfo.InvariantCulture)
             }));
 
-        tidalData = new TidalWaterDTO
+        tidalData = new TidalWaterDto
         {
             Name = name,
             LastUpdated = lastUpdated,

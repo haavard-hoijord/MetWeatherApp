@@ -1,6 +1,6 @@
 ﻿namespace Backend.DTOs;
 
-public interface ITidalWaterDTO
+public interface ITidalWaterDto
 {
     public string Name { get; set; }
     public DateTime LastUpdated { get; set; }
@@ -8,8 +8,9 @@ public interface ITidalWaterDTO
 }
 
 public interface ITidalValue {
-    public DateTime TimeUTC { get; set; }
+    public DateTime TimeUtc { get; set; }
     public double Surge { get; set; }
+    public double Tide { get; set; }
     public double Total { get; set; }
     
     public double P0 { get; set; }
@@ -19,7 +20,7 @@ public interface ITidalValue {
     public double P100 { get; set; }
 }
 
-public class TidalWaterDTO : ITidalWaterDTO
+public class TidalWaterDto : ITidalWaterDto
 {
     public string Name { get; set; }
     public DateTime LastUpdated { get; set; }
@@ -28,8 +29,9 @@ public class TidalWaterDTO : ITidalWaterDTO
 
 public class TidalValue : ITidalValue
 {
-    public DateTime TimeUTC { get; set; }
+    public DateTime TimeUtc { get; set; }
     public double Surge { get; set; }
+    public double Tide { get; set; }
     public double Total { get; set; }
     
     public double P0 { get; set; }

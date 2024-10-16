@@ -33,7 +33,7 @@ public class TidalwaterController(ITidalApi tidalApi) : Controller
     /// <response code="400">If the request is invalid</response>
     [HttpGet("")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(ITidalWaterDTO), 200)]
+    [ProducesResponseType(typeof(ITidalWaterDto), 200)]
     [ProducesResponseType(typeof(string), 400)]
     public async Task<IActionResult> TidalWater([Required] string harborId)
     {

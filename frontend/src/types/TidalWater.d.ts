@@ -9,6 +9,7 @@ export type TidalWater = {
 export type TidalWaterValue = {
   timeUTC: Date;
   surge: number;
+  tide: number;
   total: number;
   p0: number;
   p25: number;

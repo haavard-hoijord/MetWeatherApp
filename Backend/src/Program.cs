@@ -2,6 +2,8 @@
 
 public static class Program
 {
+    public static readonly string BaseUrl = "https://api.met.no/weatherapi/";
+    
     public static void Main(string[] args)
     {
         CreateHostBuilder(args).Build().Run();

@@ -192,7 +192,7 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
 
             blockHeightData.push({
               time: dateString,
-              level: parseFloat((value.surge * 100).toFixed(2)),
+              level: parseFloat((value.tide * 100).toFixed(2)),
             });
           }
 

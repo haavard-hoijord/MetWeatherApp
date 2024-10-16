@@ -1,27 +1,27 @@
 ﻿namespace Backend.DTOs;
 
-public class LocationsDTO
+public class LocationsDto
 {
-    public FeatureDTO[] Features { get; set; }
+    public FeatureDto[] Features { get; set; }
 }
 
-public class FeatureDTO
+public class FeatureDto
 {
-    public GeometryDTO Geometry { get; set; }
-    public PropertiesDTO Properties { get; set; }
+    public GeometryDto Geometry { get; set; }
+    public PropertiesDto Properties { get; set; }
     public string Type { get; set; }
     public string Title { get; set; }
     public string Id { get; set; }
 }
 
-public class PropertiesDTO
+public class PropertiesDto
 {
-    public string collection { get; set; }
-    public string shortname { get; set; }
+    public string Collection { get; set; }
+    public string Shortname { get; set; }
 }
 
-public class GeometryDTO
+public class GeometryDto
 {
-    public Double[] Coordinates { get; set; }
+    public double[] Coordinates { get; set; }
     public string Type { get; set; }
 }
