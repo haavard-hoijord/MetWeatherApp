@@ -14,8 +14,9 @@ import {
 import "./TidalWater.css";
 import { TidalWater } from "../types/TidalWater";
 import LocationContainer from "../components/LocationBlocks.tsx";
+import { Page } from "../types/Page";
 
-const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
+const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: Page) => {
   const [harbors, setHarbors] = useState<Harbor[]>([]);
   const [data, setData] = useState<ChartData[]>([]);
 
@@ -77,7 +78,7 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
   ];
 
   const mergeData = (data: BlockData[]) => {
-    const mergedData: Record<string, any> = {};
+    const mergedData: Record<number, any> = {};
 
     for (let datum of data) {
       for (let datum1 of datum.data) {
@@ -99,23 +100,20 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
     const min = Math.min(...values) * multiplier;
     const max = Math.max(...values) * multiplier;
 
-    return [
-      Math.min(parseFloat(min.toFixed(2)), -10),
-      Math.max(parseFloat(max.toFixed(2)), 10),
-    ];
+    return [Math.min(min, -5), Math.max(max, 5)];
   };
 
   const renderLineChart = (
     <div className="chart">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          margin={{ left: 10, right: 20, bottom: 90 }}
+          margin={{ left: 40, right: 20, bottom: 100 }}
           data={mergeData(blocks?.filter((s) => s.enabled) ?? [])}
         >
           <CartesianGrid
             stroke="#44444444"
             strokeDasharray={"5 5"}
-            fill={"#83838399"}
+            fill={"rgba(69,69,69,0.5)"}
           />
 
           {blocks &&
@@ -128,9 +126,9 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
                   dot={false}
                   name={block.value?.name}
                   key={block.id}
-                  fillOpacity={0.2}
+                  fillOpacity={0.4}
                   strokeOpacity={1}
-                  strokeWidth={2}
+                  strokeWidth={4}
                   fill={colors[block.id % colors.length]}
                   baseValue="dataMin"
                   connectNulls={true}
@@ -141,16 +139,25 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
           <XAxis
             dataKey="time"
             minTickGap={20}
-            angle={-60}
-            dy={45}
-            dx={-25}
+            angle={-70}
+            dy={50}
+            dx={-20}
             stroke="#000000"
+            tickFormatter={(value, index) => {
+              const date = new Date(value);
+              const dateString = `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
+              const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+              return `${dateString}, ${timeString}`;
+            }}
           />
           <YAxis
-            unit="cm"
-            tickCount={20}
+            minTickGap={20}
+            tickCount={100}
             stroke="#000000"
             domain={calculateDomain(data)}
+            tickFormatter={(value: any) =>
+              `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`
+            }
           />
 
           {data.length > 0 && (
@@ -158,9 +165,17 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
               animationDuration={0}
               isAnimationActive={false}
               itemSorter={(item: any) => -item.value}
-              formatter={(value: any) => `${value}cm`}
+              formatter={(value: any) =>
+                `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`
+              }
               contentStyle={{ backgroundColor: "gray" }}
               wrapperStyle={{ color: "black" }}
+              labelFormatter={(value: any) => {
+                const date = new Date(value);
+                const dateString = `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
+                const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+                return `${dateString}, ${timeString}`;
+              }}
             />
           )}
         </AreaChart>
@@ -187,12 +202,10 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
           const tidalWater: TidalWater = response.data as TidalWater;
 
           for (let value of tidalWater.values) {
-            const date = new Date(value.timeUTC);
-            const dateString = `${date.getDay()}. ${date.toLocaleDateString("default", { month: "short" })} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-
+            const date = new Date(value.timeUtc);
             blockHeightData.push({
-              time: dateString,
-              level: parseFloat((value.tide * 100).toFixed(2)),
+              time: date.getTime(),
+              level: value[block.type] * 100,
             });
           }
 
@@ -236,6 +249,7 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
         value: undefined,
         data: [],
         enabled: true,
+        type: "surge",
       },
     ]);
   };
@@ -255,10 +269,17 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: any) => {
                 <LocationContainer
                   block={block}
                   blocks={blocks}
+                  values={harbors}
                   color={colors[block.id % colors.length]}
                   onClose={() => removeBlock(block.id)}
                   onChange={(e: any) => handleLocationChange(e, block.id)}
-                  values={harbors}
+                  onChangeType={(e: any, block: BlockData) => {
+                    const bl = blocks.find((bl) => bl.id === block.id);
+                    if (bl) {
+                      bl.type = e;
+                      updateData();
+                    }
+                  }}
                   onToggle={(e: boolean, block: BlockData) => {
                     const bl = blocks.find((bl) => bl.id === block.id);
                     if (bl) {

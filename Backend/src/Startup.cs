@@ -66,7 +66,7 @@ public class Startup(IConfiguration configuration)
         {
             // Dynamically create a generic method for RegisterApiClient<TApiEndpoint>
             var method = typeof(Startup).GetMethod(nameof(RegisterApiClient))?.MakeGenericMethod(endpointType);
-
+            
             // Invoke the method to register the ApiClient<TApiEndpoint>
             method?.Invoke(null, [services]);
         }
@@ -80,7 +80,7 @@ public class Startup(IConfiguration configuration)
         {
             // Instantiate the TApiEndpoint type and set the base address
             var endpoint = new TApiEndpoint();
-            client.BaseAddress = new Uri(Program.BaseUrl + endpoint.BaseUrl);
+            client.BaseAddress = new Uri(Program.BaseUrl + endpoint.EndpointPath);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         }).AddTypedClient<IWeatherApi<TApiEndpoint>>((httpClient, _) => new WeatherApi<TApiEndpoint>(httpClient));
     }

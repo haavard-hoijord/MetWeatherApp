@@ -2,8 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { MenuItem, FormControl, Select } from "@mui/material";
-import ToggleSwitch from "./ToggleSwitch.tsx";
+import { MenuItem, FormControl, Select, Switch } from "@mui/material";
 import { Harbor } from "../types/Harbor";
 import { BlockData } from "../types/TidalWater";
 
@@ -29,7 +28,7 @@ const TopBar = styled.div`
 
 // Dropdown inside the button
 const DropdownContainer = styled.div`
-  padding: 50px 10px 10px 10px;
+  padding: 0px 10px 10px 10px;
 `;
 
 // Close button at the top-right corner
@@ -38,6 +37,7 @@ const CloseButton = styled(IconButton)`
   top: 4px;
   right: 4px;
   float: right;
+  margin-bottom: 20px;
 `;
 
 const LocationContainer = ({
@@ -46,6 +46,7 @@ const LocationContainer = ({
   color,
   onClose,
   onChange,
+  onChangeType,
   onToggle,
   values,
 }: {
@@ -54,10 +55,12 @@ const LocationContainer = ({
   color: string;
   onClose: () => void;
   onChange: (event: any) => void;
+  onChangeType: (event: any, block: BlockData) => void;
   onToggle: (event: boolean, block: BlockData) => void;
   values: Harbor[];
 }) => {
   const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
 
   const handleChange = (event: any) => {
     setSelectedValue(event.target.value);
@@ -75,7 +78,10 @@ const LocationContainer = ({
       >
         <CloseIcon style={{ color: "gray" }} />
       </CloseButton>
-      <ToggleSwitch onToggle={(e: boolean) => onToggle(e, block)} />
+      <Switch
+        checked={block.enabled}
+        onChange={(e: any) => onToggle(e.target.checked, block)}
+      />
       <DropdownContainer>
         <FormControl fullWidth>
           <Select
@@ -111,6 +117,36 @@ const LocationContainer = ({
                   {value.name}
                 </MenuItem>
               ))}
+          </Select>
+        </FormControl>
+      </DropdownContainer>
+      <DropdownContainer>
+        <FormControl fullWidth>
+          <Select
+            value={selectedType ?? block.type}
+            onChange={(e: any) => {
+              setSelectedType(e.target.value);
+              onChangeType(e.target.value, block);
+            }}
+            displayEmpty
+            inputProps={{ "aria-label": "Without label" }}
+            sx={{
+              color: "#fff", // White text for dropdown
+              ".MuiOutlinedInput-notchedOutline": {
+                borderColor: `${color}`, // Muted blue border
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#fff", // White border on hover
+              },
+              ".MuiSvgIcon-root": {
+                color: `${color}`, // Color of the dropdown arrow
+              },
+            }}
+            variant="outlined"
+          >
+            <MenuItem value="surge">Surge</MenuItem>
+            <MenuItem value="tide">Tide</MenuItem>
+            <MenuItem value="total">Total</MenuItem>
           </Select>
         </FormControl>
       </DropdownContainer>

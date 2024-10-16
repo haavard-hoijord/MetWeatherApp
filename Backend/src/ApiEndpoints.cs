@@ -2,11 +2,11 @@
 
 public interface IApiEndpoint
 {
-    string BaseUrl { get; }
+    string EndpointPath { get; }
 }
 
 public class TidalWaterApiEndpoint : IApiEndpoint
 {
-    public string BaseUrl => "tidalwater/1.1/";
+    public string EndpointPath => "tidalwater/1.1/";
 }
 

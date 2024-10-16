@@ -1,4 +1,6 @@
-const HomePage = ({ setError, setLoading, loading, apiUrl }: any) => {
+import { Page } from "../types/Page";
+
+const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
   return <></>;
 };
 

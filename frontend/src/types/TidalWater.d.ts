@@ -7,7 +7,7 @@ export type TidalWater = {
 };
 
 export type TidalWaterValue = {
-  timeUTC: Date;
+  timeUtc: Date;
   surge: number;
   tide: number;
   total: number;
@@ -19,13 +19,14 @@ export type TidalWaterValue = {
 };
 
 export type ChartData = {
-  time: string;
+  time: number;
   level: number;
 };
 
 export type BlockData = {
   id: number;
   enabled: boolean;
+  type: "surge" | "tide" | "total";
   value: Harbor | undefined;
   data: ChartData[];
 };

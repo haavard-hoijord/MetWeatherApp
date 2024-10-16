@@ -11,7 +11,7 @@ public partial class TidalApi(IWeatherApi<TidalWaterApiEndpoint> weatherApi, IMe
 {
     private static readonly MemoryCacheEntryOptions CacheOptions = new()
     {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
     };
 
     public async Task<List<IHarbor>> GetHarborsAsync()
@@ -82,7 +82,7 @@ public partial class TidalApi(IWeatherApi<TidalWaterApiEndpoint> weatherApi, IMe
             {
                 TimeUtc = DateTime.ParseExact(
                     $"{columns[0]}{columns[1].PadLeft(2, '0')}{columns[2].PadLeft(2, '0')} {columns[3].PadLeft(2, '0')}:{columns[4].PadLeft(2, '0')} {lastUpdated:zzz}",
-                    "yyyyMMdd HH:mm zzz", CultureInfo.InvariantCulture),
+                    "yyyyMMdd HH:mm zzz", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal),
                 Surge = double.Parse(columns[5], CultureInfo.InvariantCulture),
                 Tide = double.Parse(columns[6], CultureInfo.InvariantCulture),
                 Total = double.Parse(columns[7], CultureInfo.InvariantCulture),
