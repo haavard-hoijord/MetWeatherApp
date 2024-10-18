@@ -149,6 +149,9 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: Page) => {
               const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
               return `${dateString}, ${timeString}`;
             }}
+            style={{
+              textShadow: "0px 4px 4px rgba(0, 0, 0, 0.5)",
+            }}
           />
           <YAxis
             minTickGap={20}
@@ -158,6 +161,9 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: Page) => {
             tickFormatter={(value: any) =>
               `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`
             }
+            style={{
+              textShadow: "0px 4px 4px rgba(0, 0, 0, 0.5)",
+            }}
           />
 
           {data.length > 0 && (

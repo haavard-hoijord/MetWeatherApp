@@ -12,7 +12,7 @@ const ButtonContainer = styled.div`
   width: 100%;
   background-color: #333;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.4);
   margin-bottom: 20px;
 `;
 
@@ -28,7 +28,7 @@ const TopBar = styled.div`
 
 // Dropdown inside the button
 const DropdownContainer = styled.div`
-  padding: 0px 10px 10px 10px;
+  padding: 0 10px 10px 10px;
 `;
 
 // Close button at the top-right corner
@@ -68,7 +68,7 @@ const LocationContainer = ({
   };
 
   return (
-    <ButtonContainer>
+    <ButtonContainer key={block.id}>
       <TopBar color={color} />
       <CloseButton
         key="close-btn"

@@ -132,3 +132,8 @@ dist
 /*/bin
 /*/obj
 **/*.sln.DotSettings.user
+/.idea
+/Backend/bin
+/Backend/Common/bin
+/Backend/Common/obj
+/Backend/obj

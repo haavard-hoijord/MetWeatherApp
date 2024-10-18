@@ -7,8 +7,35 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Common\obj\Common.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="Common\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="Common\obj\project.packagespec.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="Common\Common.csproj" />
     </ItemGroup>
 
 </Project>
