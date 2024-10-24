@@ -1,14 +1,20 @@
 import { Nav, NavLink, NavMenu, Title } from "./NavbarStyle";
 
-const Navbar = () => {
+const Navbar = ({ changePage }: any) => {
   return (
     <>
       <Nav>
         <Title>Weather App</Title>
         <NavMenu>
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/tidal-water">Tidal Water</NavLink>
-          <NavLink to="/temperature">Temperature</NavLink>
+          <NavLink onClick={changePage} to="/">
+            Home
+          </NavLink>
+          <NavLink onClick={changePage} to="/tidal-water">
+            Tidal Water
+          </NavLink>
+          <NavLink onClick={changePage} to="/temperature">
+            Temperature
+          </NavLink>
         </NavMenu>
       </Nav>
     </>

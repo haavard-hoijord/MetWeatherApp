@@ -3,23 +3,11 @@ using System.Text.RegularExpressions;
 using Common;
 using Common.Records;
 using Common.Services;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Backend.Services;
 
 public partial class TidalApi(IWeatherApi<TidalWaterApiEndpoint> weatherApi) : ITidalApi
 {
-	public async Task<List<Harbor>> GetHarborsAsync()
-	{
-		var harbors = await weatherApi.GetJsonAsync<MetLocation>("locations");
-
-		var harborData = harbors
-			.Features.Select(s => new Harbor(s.Id, s.Title, new Position(s.Geometry.Coordinates[0], s.Geometry.Coordinates[1]), s.Geometry.Type))
-			.ToList();
-
-		return harborData;
-	}
-
 	public async Task<TidalWaterData> GetTidalWaterAsync(string harborId)
 	{
 		var content = await weatherApi.GetDataAsync($"?harbor={harborId}");

@@ -24,11 +24,11 @@ const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 
   const fetchHarbors = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/tidalwater/harbors`);
+      const response = await axios.get(`${apiUrl}/harbor`);
       const harbors: Harbor[] = response.data as Harbor[];
       setHarbors(harbors);
     } catch (err: any) {
-      console.error(err);
+      console.error(err.message);
       setError(err.message);
     } finally {
       setLoading(false);

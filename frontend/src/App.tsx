@@ -15,9 +15,13 @@ function App() {
     setError(null);
   }, []);
 
+  const changePage = () => {
+    setError(null);
+  };
+
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navbar changePage={changePage} />
       {error && (
         <div className="error" style={{ color: "red", fontSize: 18 }}>
           {error}

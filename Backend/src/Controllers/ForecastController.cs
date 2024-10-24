@@ -7,7 +7,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ForecastController(IForecastApi forecastApi, ITidalApi tidalApi) : Controller
+public class ForecastController(IForecastApi forecastApi, IHarborApi harborApi) : Controller
 {
 	[HttpGet("")]
 	[Produces("application/json")]
@@ -24,7 +24,7 @@ public class ForecastController(IForecastApi forecastApi, ITidalApi tidalApi) : 
 	[ProducesResponseType(typeof(string), 400)]
 	public async Task<IActionResult> Forecast(string harborId)
 	{
-		var harbors = await tidalApi.GetHarborsAsync();
+		var harbors = await harborApi.GetHarborsAsync();
 
 		if (harbors.All(h => h.Id != harborId))
 			return BadRequest("Invalid harbor ID");

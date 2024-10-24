@@ -68,6 +68,7 @@ public class Startup(IConfiguration configuration)
 
 		services.AddScoped<ITidalApi, TidalApi>();
 		services.AddScoped<IForecastApi, ForecastApi>();
+		services.AddScoped<IHarborApi, HarborApi>();
 
 		var apiEndpointTypes = new List<Type>();
 		var entryAssembly = Assembly.GetEntryAssembly();

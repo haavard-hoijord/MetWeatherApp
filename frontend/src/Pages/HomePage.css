@@ -1,0 +1,70 @@
+a[href^="http://maps.google.com/maps"]{display:none !important}
+a[href^="https://maps.google.com/maps"]{display:none !important}
+
+.gmnoprint a, .gmnoprint span, .gm-style-cc {
+    display:none;
+}
+.gmnoprint div {
+    background:none !important;
+}
+
+.maps-container {
+    height: 20vh;
+    width: 20vh;
+    transition: height 1s, width 1s;
+    overflow: hidden;
+    border-radius: 15px;
+    margin: 10px 0 10px 10px;
+}
+
+.maps-container:hover {
+    height: 50vh;
+    width: 50vh;
+    max-width: 50vh;
+}
+
+.home-page{
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.chart-section {
+    flex: 1 0 90%;
+    margin: 0 10px 10px 10px;
+    background: #7d7d7d;
+    height: 90vh;
+    border-radius: 15px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    grid-auto-rows: minmax(auto, 500px);
+    /*gap: 10px;*/
+    overflow: hidden;
+    /*grid-auto-rows: minmax(10px, auto);*/
+}
+
+.info-chart {
+    background: #a9a9a9;
+    border-radius: 15px;
+    margin: 10px;
+    box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.3);
+}
+
+.location-info {
+    display: flex;
+    flex-flow: column;
+    flex-wrap: wrap;
+    flex: 1 0 20%;
+    margin: 10px;
+    background: #a9a9a9;
+    border-radius: 15px;
+}
+
+.location-info h2 {
+    margin: 10px;
+}
+
+.location-info p {
+    margin: 0 10px;
+}

@@ -17,10 +17,10 @@ public class HarborOperationFilter(IServiceProvider serviceProvider) : IOperatio
 
 		// Resolve scoped service within operation
 		using var scope = serviceProvider.CreateScope();
-		var tidalApi = scope.ServiceProvider.GetRequiredService<ITidalApi>();
+		var harborApi = scope.ServiceProvider.GetRequiredService<IHarborApi>();
 
 		// Fetch harbor data asynchronously
-		var harbors = tidalApi.GetHarborsAsync().GetAwaiter().GetResult();
+		var harbors = harborApi.GetHarborsAsync().GetAwaiter().GetResult();
 
 		// Modify parameter to include Enum values (dropdown in Swagger UI)
 		harborIdParam.Schema.Enum = harbors.Select(h => new OpenApiString(h.Id)).ToList<IOpenApiAny>();

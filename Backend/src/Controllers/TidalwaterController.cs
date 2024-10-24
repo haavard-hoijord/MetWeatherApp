@@ -10,21 +10,6 @@ namespace Backend.Controllers;
 public class TidalwaterController(ITidalApi tidalApi) : Controller
 {
 	/// <summary>
-	///     Get a list of harbors supported by the api
-	/// </summary>
-	/// <returns>List of harbors</returns>
-	/// <response code="200">Returns a list of harbors</response>
-	/// <response code="400">If the request is invalid</response>
-	[HttpGet("harbors")]
-	[Produces("application/json")]
-	[ProducesResponseType(typeof(List<Harbor>), 200)]
-	[ProducesResponseType(typeof(string), 400)]
-	public async Task<IActionResult> Harbors()
-	{
-		return Ok(await tidalApi.GetHarborsAsync());
-	}
-
-	/// <summary>
 	///     Get tidal water data for a specific harbor
 	/// </summary>
 	/// <param name="harborId">The harbor to fetch data for</param>
