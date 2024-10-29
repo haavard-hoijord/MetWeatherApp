@@ -37,6 +37,9 @@ namespace Internal.Records
 	{
 		[JsonProperty]
 		public MetForecastInstantDetails Details => Data.Instant.Details;
+
+		[JsonProperty]
+		public string? SymbolCode => Data.Next1Hours?.Summary.SymbolCode;
 	};
 
 	public record MetForecastData(

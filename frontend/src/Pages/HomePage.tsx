@@ -10,12 +10,15 @@ import { TidalWater } from "../types/TidalWater";
 import {
   Area,
   AreaChart,
-  Label,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import TemperatureChart from "../components/charts/TemperatureChart.tsx";
+import TidalChart from "../components/charts/TidalChart.tsx";
+import WindSpeedChart from "../components/charts/WindSpeedChart.tsx";
+import CloudCoverageChart from "../components/charts/CloudCoverageChart.tsx";
 
 const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -30,42 +33,28 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 
   const [closestHarbor, setClosestHarbor] = useState<Harbor>();
   const [tidalData, setTidalData] = useState<TidalWater>();
-  const [weatherData, setWeatherData] = useState<any>();
+  const [weatherData, setWeatherData] = useState<WeatherData>();
 
   useEffect(() => {
-    if (!TimeRanges) {
-      setTimeRangeFunc(7);
+    if (!timeRange) {
+      const now = new Date();
+      const end = new Date();
+      now.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+
+      end.setDate(end.getDate() + 3);
+      setTimeRange([now, end]);
+      console.log("Time Range", [now, end]);
     }
   }, []);
-
-  function getFullHoursBetweenDates(startDate: Date, endDate: Date): Date[] {
-    const fullHours: Date[] = [];
-    let currentDate = new Date(startDate);
-
-    // Set to next full hour if startDate is not on a full hour
-    currentDate.setMinutes(0, 0, 0);
-
-    // Loop until currentDate is after endDate
-    while (currentDate <= endDate) {
-      fullHours.push(new Date(currentDate));
-      currentDate.setHours(currentDate.getHours() + 1);
-    }
-
-    return fullHours;
-  }
-
-  const setTimeRangeFunc = (days: number) => {
-    const dates = getFullHoursBetweenDates(
-      new Date(),
-      new Date(new Date().setDate(new Date().getDate() + days)),
-    );
-    setTimeRange(dates);
-  };
 
   const fetchInfo = async () => {
     if (!location) {
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await axios.get(
@@ -83,9 +72,8 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
       const weatherResponse = await axios.get(
         `${apiUrl}/forecast?latitude=${position.lat}&longitude=${position.lng}`,
       );
-      const weather = weatherResponse.data as any;
+      const weather = weatherResponse.data as WeatherData;
       setWeatherData(weather);
-      console.log(weather);
     } catch (err: any) {
       console.error(err.message);
       setError(err.message);
@@ -96,10 +84,34 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 
   const setLocationFunc = async (location: google.maps.places.Place) => {
     setLocation(location);
-    setPosition({
-      lat: parseFloat(location?.location?.lat().toFixed(4) ?? "0"),
-      lng: parseFloat(location?.location?.lng().toFixed(4) ?? "0"),
-    });
+
+    type loctFunc = {
+      lat: () => number;
+      lng: () => number;
+    };
+
+    type loct = {
+      lat: number;
+      lng: number;
+    };
+
+    const loct = location?.location as loctFunc | loct;
+
+    if (
+      typeof location?.location?.["lat"] === "function" &&
+      typeof location?.location?.["lng"] === "function"
+    ) {
+      setPosition({
+        lat: parseFloat((loct as loctFunc).lat().toFixed(4) ?? "0"),
+        lng: parseFloat((loct as loctFunc).lng().toFixed(4) ?? "0"),
+      });
+    } else {
+      setPosition({
+        lat: parseFloat((loct as loct).lat.toFixed(4) ?? "0"),
+        lng: parseFloat((loct as loct).lng.toFixed(4) ?? "0"),
+      });
+    }
+
     await fetchInfo();
   };
 
@@ -123,63 +135,17 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
       <div className="location-info">
         <h2>{location?.displayName}</h2>
         <p>{location?.formattedAddress}</p>
+        {loading && (
+          <div className="map-loading-container">
+            <div className="map-loading" />
+          </div>
+        )}
       </div>
       <div className="chart-section">
-        <div className="info-chart tidalwater">
-          {tidalData && (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={tidalData?.values}
-                margin={{ left: 40, right: 20, bottom: 100 }}
-              >
-                <Area dataKey="surge" name={"Water level"} />
-                <XAxis
-                  minTickGap={30}
-                  angle={-70}
-                  dy={50}
-                  dx={-20}
-                  stroke="#000000"
-                  dataKey="timeUtc"
-                  tickFormatter={(value, index) => {
-                    const date = new Date(value);
-                    const dateString = `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
-                    const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                    return `${dateString}, ${timeString}`;
-                  }}
-                />
-                <YAxis
-                  tickFormatter={(value: any) =>
-                    `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`
-                  }
-                />
-                <Tooltip
-                  animationDuration={0}
-                  isAnimationActive={false}
-                  itemSorter={(item: any) => -item.value}
-                  formatter={(value: any) =>
-                    `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`
-                  }
-                  wrapperStyle={{ color: "black" }}
-                  labelFormatter={(value: any) => {
-                    const date = new Date(value);
-                    const dateString = `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
-                    const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-                    return `${dateString}, ${timeString}`;
-                  }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-        <div className="info-chart chart2"></div>
-        <div className="info-chart chart3"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
-        <div className="info-chart chart4"></div>
+        <TemperatureChart data={weatherData} timeRange={timeRange} />
+        <TidalChart data={tidalData} timeRange={timeRange} />
+        <WindSpeedChart data={weatherData} timeRange={timeRange} />
+        <CloudCoverageChart data={weatherData} timeRange={timeRange} />
       </div>
     </div>
   );
