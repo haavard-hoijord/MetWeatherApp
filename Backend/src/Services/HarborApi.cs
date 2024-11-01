@@ -19,13 +19,12 @@ public class HarborApi(IWeatherApi<TidalWaterApiEndpoint> weatherApi) : IHarborA
 	}
 
 	//Get closest harbor within 10km
-	public async Task<Harbor?> GetClosestHarborAsync(Position position, double kmMaxDistance = 10)
+	public async Task<Harbor?> GetClosestHarborAsync(Position position, double kmMaxDistance = 50)
 	{
 		var harbors = await GetHarborsAsync();
 		var closest = harbors
 			.Where(s =>
 				GeoDistanceCalculator.Haversine(position.Latitude, position.Longitude, s.Position.Latitude, s.Position.Longitude) <= kmMaxDistance
-				|| true
 			)
 			.OrderBy(s => GeoDistanceCalculator.Haversine(position.Latitude, position.Longitude, s.Position.Latitude, s.Position.Longitude))
 			.FirstOrDefault();

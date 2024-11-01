@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
-import TidalWaterPage from "./Pages/TidalWater.tsx";
+import "./css/App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.tsx";
 import HomePage from "./Pages/HomePage.tsx";
@@ -8,7 +7,7 @@ import HomePage from "./Pages/HomePage.tsx";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,8 +22,8 @@ function App() {
     <BrowserRouter>
       <Navbar changePage={changePage} />
       {error && (
-        <div className="error" style={{ color: "red", fontSize: 18 }}>
-          {error}
+        <div className="error">
+          <h2 onClick={() => setError(null)}>{error || "Test"}</h2>
         </div>
       )}
       <Routes>
@@ -39,18 +38,13 @@ function App() {
             />
           }
         />
-        <Route
-          path="/tidal-water"
-          element={
-            <TidalWaterPage
-              setError={setError}
-              loading={loading}
-              setLoading={setLoading}
-              apiUrl={apiUrl}
-            />
-          }
-        />
       </Routes>
+
+      {loading && (
+        <div className="loading-container">
+          <div className="loading" />
+        </div>
+      )}
     </BrowserRouter>
   );
 }

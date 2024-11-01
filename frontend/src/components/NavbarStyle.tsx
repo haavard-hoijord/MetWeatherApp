@@ -8,6 +8,7 @@ export const Nav = styled.nav`
   padding: 20px 20px;
   box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   position: sticky;
+  z-index: 2000;
 `;
 
 // NavMenu: A container for the navigation links (usually in a row)

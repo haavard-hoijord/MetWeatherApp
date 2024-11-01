@@ -11,9 +11,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import "./TidalWater.css";
+// import "./TidalWater.css";
 import { TidalWater } from "../types/TidalWater";
-import LocationContainer from "../components/LocationBlocks.tsx";
+import LocationContainer from "./LocationBlocks.tsx";
 import { Page } from "../types/Page";
 
 const TidalWaterPage = ({ setError, setLoading, loading, apiUrl }: Page) => {

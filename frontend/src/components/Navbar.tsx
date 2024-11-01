@@ -9,12 +9,6 @@ const Navbar = ({ changePage }: any) => {
           <NavLink onClick={changePage} to="/">
             Home
           </NavLink>
-          {/*<NavLink onClick={changePage} to="/tidal-water">*/}
-          {/*  Tidal Water*/}
-          {/*</NavLink>*/}
-          {/*<NavLink onClick={changePage} to="/temperature">*/}
-          {/*  Temperature*/}
-          {/*</NavLink>*/}
         </NavMenu>
       </Nav>
     </>

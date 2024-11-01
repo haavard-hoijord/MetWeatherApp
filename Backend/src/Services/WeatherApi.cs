@@ -34,7 +34,7 @@ public class WeatherApi<T>(HttpClient httpClient, IMemoryCache cache) : IWeather
 		{
 			var compareTo = cachedResponse?.Headers.Date?.Add(TimeSpan.FromMinutes(30)).CompareTo(new DateTimeOffset());
 
-			if (compareTo >= 0)
+			if (compareTo <= 0)
 			{
 				var headRequest = new HttpRequestMessage(HttpMethod.Head, location);
 				AddUserAgent(headRequest);

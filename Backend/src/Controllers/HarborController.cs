@@ -37,7 +37,7 @@ public class HarborController(IHarborApi harborApi) : Controller
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(Harbor), 200)]
 	[ProducesResponseType(typeof(string), 400)]
-	public async Task<Harbor?> GetClosestHarborAsync(double latitude, double longitude, double altitude = 0, double kmMaxDistance = 10)
+	public async Task<Harbor?> GetClosestHarborAsync(double latitude, double longitude, double altitude = 0, double kmMaxDistance = 50)
 	{
 		return await harborApi.GetClosestHarborAsync(new Position(latitude, longitude, altitude), kmMaxDistance);
 	}

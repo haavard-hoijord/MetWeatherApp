@@ -1,0 +1,96 @@
+.maps-container {
+    height: 40vh;
+    width: 100vw;
+    transition: height 1s, width 1s;
+    overflow: hidden;
+    border-radius: 15px;
+    margin: 10px 0 10px 10px;
+}
+
+.home-page{
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+.chart-section {
+    flex: 1 0 90%;
+    margin: 0 10px 10px 10px;
+    background: #7d7d7d;
+    /*height: 90vh;*/
+    border-radius: 15px;
+
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    grid-auto-rows: 480px;
+    /*gap: 10px;*/
+    overflow: hidden;
+    /*grid-auto-rows: minmax(10px, auto);*/
+}
+
+.weather-chart {
+    background: #7d7d7d;
+    margin: 0 10px 10px 10px;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.weather-chart .info-chart {
+    height: 480px;
+    background: #a9a9a9;
+    border-radius: 15px;
+    margin: 10px;
+    box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.3);
+}
+
+.weather-chart .MuiSlider-root {
+    width: calc(100% - 200px);
+    margin: 10px 100px 10px 100px;
+}
+
+.weather-chart h2 {
+    padding: 10px 10px 0 15px;
+    margin: 0;
+}
+
+.date-slider {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    background: #a9a9a9;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.date-slider span{
+    font-weight: bold;
+    font-size-adjust: max(0.7);
+}
+
+.info-chart {
+    background: #a9a9a9;
+    border-radius: 15px;
+    margin: 10px;
+    box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.3);
+}
+
+.location-info h2 {
+    margin: 10px;
+}
+
+.location-info p {
+    margin: 10px 0 10px 10px;
+}
+
+.info-chart > h2 {
+    padding: 10px 10px 0 15px;
+    margin: 0;
+}
+
+.info-chart > h3 {
+    margin: 0;
+    padding-left: 15px;
+    color: lightslategrey;
+}

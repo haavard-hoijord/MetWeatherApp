@@ -4,9 +4,24 @@ import {
   Map,
   AdvancedMarker,
   useApiIsLoaded,
+  APIProvider,
 } from "@vis.gl/react-google-maps";
-import { useEffect, useState } from "react";
-import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
+import { useEffect, useRef, useState } from "react";
+
+import { OverlayLayout as TOverlayLayout } from "@googlemaps/extended-component-library/overlay_layout.js";
+import { PlacePicker as TPlacePicker } from "@googlemaps/extended-component-library/place_picker.js";
+
+import {
+  APILoader,
+  IconButton,
+  OverlayLayout,
+  PlaceDirectionsButton,
+  PlaceOverview,
+  PlacePicker,
+  SplitLayout,
+} from "@googlemaps/extended-component-library/react";
+import { google_api_key } from "../Pages/HomePage.tsx";
+import "../css/MapComponent.css";
 
 type HomePageMapProps = {
   setLocation: (location: google.maps.places.Place) => void;
@@ -16,7 +31,9 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
   const [markerPosition, setMarkerPosition] =
     useState<google.maps.LatLngAltitude>();
 
-  const [place, setPlace] = useState<google.maps.places.Place | null>(null);
+  const [place, setPlace] = useState<google.maps.places.Place | undefined>(
+    undefined,
+  );
   const [placeService, setPlaceService] =
     useState<google.maps.places.PlacesService | null>();
   const [geoCoder, setGeoCoder] = useState<google.maps.Geocoder | null>();
@@ -82,7 +99,7 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
       });
   };
 
-  const apiIsLoaded = useApiIsLoaded();
+  let apiIsLoaded = useApiIsLoaded();
   let map = useMap();
 
   useEffect(() => {
@@ -123,23 +140,60 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
     );
   }, [apiIsLoaded, map]);
 
+  const overlayLayoutRef = useRef<TOverlayLayout>(null);
+  const pickerRef = useRef<TPlacePicker>(null);
+
   return (
-    <Map
-      defaultZoom={15}
-      defaultCenter={{ lat: 58.91674, lng: 5.732428 }}
-      gestureHandling={"greedy"}
-      disableDefaultUI={true}
-      mapId={"5cb5153369603482"}
-      onClick={handleMapClick}
-    >
-      <PlaceAutocomplete onPlaceSelect={(place) => focusPlace(map!, place)} />
-      <AdvancedMarker
-        position={{
-          lat: markerPosition?.lat ?? 0,
-          lng: markerPosition?.lng ?? 0,
-        }}
-      />
-    </Map>
+    <>
+      <SplitLayout rowLayoutMinWidth={700}>
+        <div className="SplitLayoutContainer" slot="main">
+          <Map
+            defaultZoom={15}
+            defaultCenter={{ lat: 58.91674, lng: 5.732428 }}
+            gestureHandling={"greedy"}
+            disableDefaultUI={true}
+            mapId={"5cb5153369603482"}
+            onClick={handleMapClick}
+          >
+            <AdvancedMarker
+              position={{
+                lat: markerPosition?.lat ?? 0,
+                lng: markerPosition?.lng ?? 0,
+              }}
+            />
+          </Map>
+        </div>
+        <div className="SplitLayoutContainer" slot="fixed">
+          <OverlayLayout ref={overlayLayoutRef}>
+            <div className="MainContainer" slot="main">
+              <PlacePicker
+                locationBias={{ lat: 58.91674, lng: 5.732428 }}
+                radius={1000}
+                className="PlacePicker"
+                ref={pickerRef}
+                forMap="gmap"
+                onPlaceChange={() => {
+                  if (pickerRef.current?.value && map) {
+                    focusPlace(map, pickerRef.current?.value);
+                  }
+                }}
+              />
+              <PlaceOverview
+                size="x-large"
+                place={place}
+                googleLogoAlreadyDisplayed
+              >
+                <div slot="action">
+                  <PlaceDirectionsButton slot="action" variant="filled">
+                    Directions
+                  </PlaceDirectionsButton>
+                </div>
+              </PlaceOverview>
+            </div>
+          </OverlayLayout>
+        </div>
+      </SplitLayout>
+    </>
   );
 };
 
