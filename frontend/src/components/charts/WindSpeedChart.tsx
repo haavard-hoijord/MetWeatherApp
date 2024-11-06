@@ -1,4 +1,5 @@
 import BaseChart from "./BaseChart.tsx";
+import { LabelProps } from "recharts";
 
 const WindSpeedChart = ({
   data,
@@ -15,11 +16,12 @@ const WindSpeedChart = ({
         dataKey: "details.windSpeed",
         timeKey: "time",
         name: "Wind Speed",
-        strokeColor: "gray",
+        strokeColor: "white",
         strokeWith: 2,
         useGradient: true,
         gradientColors: ["white", "gray"],
         suffix: "m/s",
+        dot: true,
       }}
     />
   );

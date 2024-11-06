@@ -58,14 +58,28 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
     }
   }, []);
 
-  const fetchInfo = async (pos: { lat: number; lng: number }) => {
-    if (!location) {
-      console.error("No location set");
-      return;
-    }
+  //Fetch new data every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(
+      () => {
+        if (position) {
+          fetchInfo(position, true);
+        }
+      },
+      1000 * 60 * 5,
+    );
 
-    setLoading(true);
-    setError(null);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchInfo = async (
+    pos: { lat: number; lng: number },
+    async = false,
+  ) => {
+    if (!async) {
+      setLoading(true);
+      setError(null);
+    }
 
     try {
       const response = await axios.get(
@@ -94,7 +108,9 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
       console.error(err.message);
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (!async) {
+        setLoading(false);
+      }
     }
   };
 
@@ -137,7 +153,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 
   return (
     <div className="home-page">
-      <div className="maps-container">
+      <div className="maps-container secondary">
         <APIProvider
           apiKey={google_api_key}
           libraries={["places", "geocoding"]}
@@ -151,67 +167,64 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
           <MapComponent setLocation={setLocation} />
         </APIProvider>
       </div>
-      <div className="weather-chart">
-        <h2>Time Range</h2>
-        <div className="date-slider">
-          <Slider
-            sx={{
-              width: 300,
-              height: 15,
-              marginBottom: 20,
-
-              borderRadius: "0px",
-              "& .MuiSlider-thumb": {
-                borderRadius: "5px",
-              },
-              "& .MuiSlider-markLabel": {
-                marginTop: 1,
-              },
-            }}
-            valueLabelFormat={(value: number, index: number) => {
-              let date = new Date(value);
-              date = new Date(
-                Date.UTC(
-                  date.getFullYear(),
-                  date.getMonth(),
-                  date.getDate(),
-                  date.getHours(),
-                ),
-              );
-              return `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
-            }}
-            valueLabelDisplay="on"
-            min={maxTimeRange?.[0].getTime()}
-            max={maxTimeRange?.[1].getTime()}
-            defaultValue={timeRange?.[0].getTime()}
-            value={[...(timeRange?.map((d) => d.getTime()) ?? [])]}
-            disableSwap
-            step={86400000}
-            marks={timeRangeDates?.map((s) => {
-              let date = new Date(
-                Date.UTC(
-                  s.getFullYear(),
-                  s.getMonth(),
-                  s.getDate(),
-                  s.getHours(),
-                ),
-              );
-              return {
-                value: s.getTime(),
-                label: `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`,
-              };
-            })}
-            onChange={(_, value) => {
-              const val = value as number[];
-              if (val.length === 2 && val[1] - val[0] >= 86400000) {
-                setTimeRange([new Date(val[0]), new Date(val[1])]);
-              }
-            }}
-          />
+      <div className="weather-chart primary">
+        <div className="time-range secondary">
+          <h2>Time Range</h2>
+          <div className="date-slider">
+            <Slider
+              sx={{
+                "& .MuiSlider-thumb": {
+                  borderRadius: "5px",
+                },
+                "& .MuiSlider-markLabel": {
+                  marginTop: 3,
+                },
+              }}
+              valueLabelFormat={(value: number, index: number) => {
+                let date = new Date(value);
+                date = new Date(
+                  Date.UTC(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate(),
+                    date.getHours(),
+                  ),
+                );
+                return `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
+              }}
+              valueLabelDisplay="on"
+              min={maxTimeRange?.[0].getTime()}
+              max={maxTimeRange?.[1].getTime()}
+              defaultValue={timeRange?.[0].getTime()}
+              value={[...(timeRange?.map((d) => d.getTime()) ?? [])]}
+              disableSwap
+              step={86400000}
+              marks={timeRangeDates?.map((s) => {
+                let date = new Date(
+                  Date.UTC(
+                    s.getFullYear(),
+                    s.getMonth(),
+                    s.getDate(),
+                    s.getHours(),
+                  ),
+                );
+                return {
+                  value: s.getTime(),
+                  label: `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`,
+                };
+              })}
+              onChange={(_, value) => {
+                const val = value as number[];
+                if (val.length === 2 && val[1] - val[0] >= 86400000) {
+                  setTimeRange([new Date(val[0]), new Date(val[1])]);
+                }
+              }}
+            />
+          </div>
         </div>
         <WeatherChart data={weatherData} timeRange={timeRange} />
       </div>
-      <div className="chart-section">
+      <div className="chart-section primary">
         <TemperatureChart data={weatherData} timeRange={timeRange} />
         <TidalChart
           data={tidalData}

@@ -15,12 +15,15 @@ const CloudCoverageChart = ({
         dataKey: "details.cloudAreaFraction",
         timeKey: "time",
         name: "Cloud Coverage",
-        strokeColor: "gray",
+        strokeColor: "white",
+        fillColor: "none",
         strokeWith: 2,
-        useGradient: true,
+        useGradient: false,
         gradientColors: ["white", "gray"],
         yAxisDomain: [0, 100],
+        dot: true,
         suffix: "%",
+        usePadding: true,
       }}
     />
   );

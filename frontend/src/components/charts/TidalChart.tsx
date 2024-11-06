@@ -22,8 +22,10 @@ const TidalChart = ({
         strokeColor: "",
         strokeWith: 0,
         useGradient: true,
-        gradientColors: ["blue", "cyan"],
+        gradientColors: ["blue", "cyan", "lightblue"],
         subTitle: harbor ? " > Harbor: " + harbor.name : "",
+        yAxisDomain: [-0.1, 0.1],
+        gradientRange: [-0.2, 0.2],
         formatter: (value: any) =>
           `${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`,
       }}

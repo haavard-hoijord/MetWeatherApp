@@ -1,0 +1,765 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "WeatherInfo",
+    "version": "v1"
+  },
+  "paths": {
+    "/Forecast": {
+      "get": {
+        "tags": [
+          "Forecast"
+        ],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "altitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetForecast"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Forecast/{harborId}": {
+      "get": {
+        "tags": [
+          "Forecast"
+        ],
+        "parameters": [
+          {
+            "name": "harborId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "enum": [
+                "andenes",
+                "bergen",
+                "bodø",
+                "bruravik",
+                "hammerfest",
+                "harstad",
+                "heimsjø",
+                "helgeroa",
+                "honningsvåg",
+                "kabelvåg",
+                "kristiansund",
+                "leirvik",
+                "mausund",
+                "måløy",
+                "narvik",
+                "ny-ålesund",
+                "oscarsborg",
+                "oslo",
+                "rørvik",
+                "sandnes",
+                "sirevåg",
+                "solumstrand",
+                "stavanger",
+                "tregde",
+                "tromsø",
+                "trondheim",
+                "træna",
+                "vardø",
+                "viker",
+                "ålesund"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetForecast"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Harbor": {
+      "get": {
+        "tags": [
+          "Harbor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Harbor"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Harbor/closest": {
+      "get": {
+        "tags": [
+          "Harbor"
+        ],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "altitude",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 0
+            }
+          },
+          {
+            "name": "kmMaxDistance",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Harbor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Tidalwater": {
+      "get": {
+        "tags": [
+          "Tidalwater"
+        ],
+        "parameters": [
+          {
+            "name": "harborId",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "enum": [
+                "andenes",
+                "bergen",
+                "bodø",
+                "bruravik",
+                "hammerfest",
+                "harstad",
+                "heimsjø",
+                "helgeroa",
+                "honningsvåg",
+                "kabelvåg",
+                "kristiansund",
+                "leirvik",
+                "mausund",
+                "måløy",
+                "narvik",
+                "ny-ålesund",
+                "oscarsborg",
+                "oslo",
+                "rørvik",
+                "sandnes",
+                "sirevåg",
+                "solumstrand",
+                "stavanger",
+                "tregde",
+                "tromsø",
+                "trondheim",
+                "træna",
+                "vardø",
+                "viker",
+                "ålesund"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TidalWaterData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Harbor": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "$ref": "#/components/schemas/Position"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "positionType": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecast": {
+        "type": "object",
+        "properties": {
+          "geometry": {
+            "$ref": "#/components/schemas/MetPointGeometry"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/MetForecastProperties"
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "units": {
+            "$ref": "#/components/schemas/MetForecastUnits"
+          },
+          "timeSteps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetForecastTimeStep"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastData": {
+        "type": "object",
+        "properties": {
+          "instant": {
+            "$ref": "#/components/schemas/MetForecastInstant"
+          },
+          "next_1_hours": {
+            "$ref": "#/components/schemas/MetForecastTimePeriod"
+          },
+          "next_6_hours": {
+            "$ref": "#/components/schemas/MetForecastTimePeriod"
+          },
+          "next_12_hours": {
+            "$ref": "#/components/schemas/MetForecastTimePeriod"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastInlineModel": {
+        "type": "object",
+        "properties": {
+          "units": {
+            "$ref": "#/components/schemas/MetForecastUnits"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastInstant": {
+        "type": "object",
+        "properties": {
+          "details": {
+            "$ref": "#/components/schemas/MetForecastInstantDetails"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastInstantDetails": {
+        "type": "object",
+        "properties": {
+          "air_pressure_at_sea_level": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "air_temperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cloud_area_fraction": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cloud_area_fraction_high": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cloud_area_fraction_low": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cloud_area_fraction_medium": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dew_point_temperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fog_area_fraction": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "relative_humidity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "wind_from_direction": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "wind_speed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "wind_speed_of_gust": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastProperties": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/MetForecastInlineModel"
+          },
+          "timeseries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetForecastTimeStep"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastSummary": {
+        "type": "object",
+        "properties": {
+          "symbol_code": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastTimePeriod": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/MetForecastSummary"
+          },
+          "details": {
+            "$ref": "#/components/schemas/MetForecastTimePeriodDetails"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastTimePeriodDetails": {
+        "type": "object",
+        "properties": {
+          "air_temperature_max": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "air_temperature_min": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "precipitation_amount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "precipitation_amount_max": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "precipitation_amount_min": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "probability_of_precipitation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "probability_of_thunder": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ultraviolet_index_clear_sky_max": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastTimeStep": {
+        "type": "object",
+        "properties": {
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MetForecastData"
+          },
+          "details": {
+            "$ref": "#/components/schemas/MetForecastInstantDetails"
+          },
+          "symbolCode": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetForecastUnits": {
+        "type": "object",
+        "properties": {
+          "air_pressure_at_sea_level": {
+            "type": "string",
+            "nullable": true
+          },
+          "air_temperature": {
+            "type": "string",
+            "nullable": true
+          },
+          "air_temperature_max": {
+            "type": "string",
+            "nullable": true
+          },
+          "air_temperature_min": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloud_area_fraction": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloud_area_fraction_high": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloud_area_fraction_low": {
+            "type": "string",
+            "nullable": true
+          },
+          "cloud_area_fraction_medium": {
+            "type": "string",
+            "nullable": true
+          },
+          "dew_point_temperature": {
+            "type": "string",
+            "nullable": true
+          },
+          "fog_area_fraction": {
+            "type": "string",
+            "nullable": true
+          },
+          "precipitation_amount": {
+            "type": "string",
+            "nullable": true
+          },
+          "precipitation_amount_max": {
+            "type": "string",
+            "nullable": true
+          },
+          "precipitation_amount_min": {
+            "type": "string",
+            "nullable": true
+          },
+          "probability_of_precipitation": {
+            "type": "string",
+            "nullable": true
+          },
+          "probability_of_thunder": {
+            "type": "string",
+            "nullable": true
+          },
+          "relative_humidity": {
+            "type": "string",
+            "nullable": true
+          },
+          "ultraviolet_index_clear_sky_max": {
+            "type": "string",
+            "nullable": true
+          },
+          "wind_from_direction": {
+            "type": "string",
+            "nullable": true
+          },
+          "wind_speed": {
+            "type": "string",
+            "nullable": true
+          },
+          "wind_speed_of_gust": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MetPointGeometry": {
+        "type": "object",
+        "properties": {
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Position": {
+        "type": "object",
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "altitude": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TidalValue": {
+        "type": "object",
+        "properties": {
+          "timeUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "surge": {
+            "type": "number",
+            "format": "double"
+          },
+          "tide": {
+            "type": "number",
+            "format": "double"
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          },
+          "p0": {
+            "type": "number",
+            "format": "double"
+          },
+          "p25": {
+            "type": "number",
+            "format": "double"
+          },
+          "p50": {
+            "type": "number",
+            "format": "double"
+          },
+          "p75": {
+            "type": "number",
+            "format": "double"
+          },
+          "p100": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TidalWaterData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TidalValue"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
