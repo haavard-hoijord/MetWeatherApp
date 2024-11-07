@@ -32,3 +32,5 @@ Preview of the webapp
   - Typescript
   - Recharts
   - Styled-components
+  - Sortablejs
+  - react-sortablejs

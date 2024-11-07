@@ -2,43 +2,50 @@
 
 import styled, { createGlobalStyle, keyframes } from "styled-components";
 
-const backgroundAnimation = keyframes`
-    0% {
-        background-position: 0 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0 50%;
-    }
-`;
+export const LightTheme = {
+	background: "linear-gradient(to bottom, #87ceeb, #f0f8ff) no-repeat", // Light blue gradient for daytime sky
+	"--primary-color": "rgba(255, 255, 255, 0.9)", // Light card background
+	"--secondary-color": "rgba(240, 240, 240, 0.9)", // Slightly darker light gray for contrast
+	textColor: "#333", // Dark text color for readability
+	theme: "light",
+	borderColor: "#cccccc",
+	iconColor: "#333333",
+};
+
+export const DarkTheme = {
+	background: "linear-gradient(to bottom, #2b2d42, #3a3a55) no-repeat", // Darker gradient for night sky
+	"--primary-color": "rgba(45, 45, 58, 0.85)", // Dark gray card background
+	"--secondary-color": "rgba(60, 60, 75, 0.85)", // Slightly lighter dark gray for contrast
+	textColor: "#ffffff", // Light text color for dark background
+	theme: "dark",
+	borderColor: "#555555",
+	iconColor: "#ffffff",
+};
 
 const GlobalStyle = createGlobalStyle`
-	#root, :root {
-			--primary-color: #7d7d7d;
-			--secondary-color: #a9a9a9;
-	}
-	
-	body {
-		margin: 0;
-		padding: 0;
-		font-family: Arial, sans-serif;
-		background: linear-gradient(90deg, lightskyblue, skyblue, lightblue);
-		background-size: 300% 300%;
-		animation: background_animation 15s ease-in-out infinite;
-		color: white;
-	}
+		#root, :root{
+        --primary-color: ${({ theme }) => theme["--primary-color"]};
+        --secondary-color: ${({ theme }) => theme["--secondary-color"]};
+		}
+		#root {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
 
-  h2 {
-      padding: 10px 10px 0 15px;
-      margin: 0;
-  }
+        height: 100%;
+        background: ${({ theme }) => theme.background};
+        color: ${({ theme }) => theme.textColor};
+    }
 
-  h3 {
-      margin: 0;
-      padding-left: 15px;
-  }
+    h2 {
+        padding: 10px 10px 0 15px;
+        margin: 0;
+    }
+
+    h3 {
+        margin: 0;
+        padding-left: 15px;
+    }
 `;
 export default GlobalStyle;
 

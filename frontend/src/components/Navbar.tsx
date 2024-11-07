@@ -52,7 +52,7 @@ export const Title = styled.h1`
 	margin: 0 0 25px;
 `;
 
-const Navbar = ({ changePage }: any) => {
+const Navbar = ({ changePage, setDarkTheme, useDarkTheme }: any) => {
 	return (
 		<>
 			<Nav>
@@ -61,6 +61,9 @@ const Navbar = ({ changePage }: any) => {
 					<NavLink onClick={changePage} to="/">
 						Home
 					</NavLink>
+					<ToggleButton onClick={() => setDarkTheme(!useDarkTheme)}>
+						{useDarkTheme ? "🌙" : "☀️"}
+					</ToggleButton>
 				</NavMenu>
 			</Nav>
 		</>
@@ -68,3 +71,18 @@ const Navbar = ({ changePage }: any) => {
 };
 
 export default Navbar;
+
+const ToggleButton = styled.button`
+	background: none;
+	border: none;
+	font-size: 1.5em;
+	cursor: pointer;
+	color: ${({ theme }) => theme.textColor}; // Icon color matches text color
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+
+	&:hover {
+		opacity: 0.8;
+	}
+`;

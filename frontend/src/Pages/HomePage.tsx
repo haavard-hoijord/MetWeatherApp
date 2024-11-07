@@ -1,7 +1,9 @@
+// noinspection CssUnresolvedCustomProperty
+
 import { Page } from "../types/Page";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import MapComponent from "../components/MapComponent.tsx";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Harbor } from "../types/Harbor";
 import { TidalWater } from "../types/TidalWater";
@@ -12,12 +14,18 @@ import CloudCoverageChart from "../components/charts/CloudCoverageChart.tsx";
 import WeatherChart from "../components/charts/WeatherChart.tsx";
 import { Slider } from "@mui/material";
 import { PrimaryContainer, SecondaryContainer } from "../Styles.ts";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
+import { ReactSortable, ReactSortableProps } from "react-sortablejs";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
-	const [location, setLocation] = useState<google.maps.places.Place>();
+	const theme = useTheme();
+
+	const [location, setLocation] = useState<google.maps.places.Place>(() => {
+		const savedLocation = localStorage.getItem("location");
+		return savedLocation ? JSON.parse(savedLocation) : undefined;
+	});
 	const [position, setPosition] = useState<{ lat: number; lng: number }>({
 		lat: 0,
 		lng: 0,
@@ -31,30 +39,40 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	const [tidalData, setTidalData] = useState<TidalWater>();
 	const [weatherData, setWeatherData] = useState<WeatherData>();
 
+	const initTimeRange = () => {
+		const before = new Date();
+		const now = new Date();
+		const end = new Date();
+		before.setHours(0, 0, 0, 0);
+		now.setHours(0, 0, 0, 0);
+		end.setHours(0, 0, 0, 0);
+
+		before.setDate(before.getDate() - 7);
+		end.setDate(end.getDate() + 7);
+
+		if (
+			!timeRange ||
+			timeRange[0].getTime() < before.getTime() ||
+			timeRange[1].getTime() < now.getTime()
+		) {
+			setTimeRange([now, end]);
+		}
+		setMaxTimeRange([before, end]);
+
+		const dates: Date[] = [];
+		for (let d = new Date(before); d <= end; d.setDate(d.getDate() + 1)) {
+			const date = new Date(d);
+			date.setHours(0, 0, 0, 0);
+
+			if (dates.find((d) => d.getTime() === date.getTime())) continue;
+			dates.push(date);
+		}
+		setTimeRangeDates(dates);
+	};
+
 	useEffect(() => {
 		if (!timeRange) {
-			const before = new Date();
-			const now = new Date();
-			const end = new Date();
-			before.setHours(0, 0, 0, 0);
-			now.setHours(0, 0, 0, 0);
-			end.setHours(0, 0, 0, 0);
-
-			before.setDate(before.getDate() - 7);
-			end.setDate(end.getDate() + 7);
-			setTimeRange([now, end]);
-
-			setMaxTimeRange([before, end]);
-
-			const dates: Date[] = [];
-			for (let d = new Date(before); d <= end; d.setDate(d.getDate() + 1)) {
-				const date = new Date(d);
-				date.setHours(0, 0, 0, 0);
-
-				if (dates.find((d) => d.getTime() === date.getTime())) continue;
-				dates.push(date);
-			}
-			setTimeRangeDates(dates);
+			initTimeRange();
 		}
 	}, []);
 
@@ -62,9 +80,11 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	useEffect(() => {
 		const interval = setInterval(
 			() => {
-				if (position) {
-					fetchInfo(position, true);
-				}
+				// initTimeRange();
+				//
+				// if (position) {
+				// 	fetchInfo(position, true);
+				// }
 			},
 			1000 * 60 * 5
 		);
@@ -151,6 +171,63 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 		fetchInfo(pos);
 	}, [location]);
 
+	const [chartOrder, setChartOrder] = useState(() => {
+		const savedOrder = localStorage.getItem("chartOrder");
+		return savedOrder
+			? JSON.parse(savedOrder)
+			: [
+					{ id: "temperature-chart" },
+					{ id: "tidal-chart" },
+					{ id: "wind-speed-chart" },
+					{ id: "cloud-coverage-chart" },
+				];
+	});
+
+	// Save order to localStorage whenever chartOrder changes
+	useEffect(() => {
+		localStorage.setItem("chartOrder", JSON.stringify(chartOrder));
+	}, [chartOrder]);
+
+	const renderChart = (chartId: string) => {
+		switch (chartId) {
+			case "temperature-chart":
+				return (
+					<TemperatureChart
+						key={chartId}
+						data={weatherData}
+						timeRange={timeRange}
+					/>
+				);
+			case "tidal-chart":
+				return (
+					<TidalChart
+						key={chartId}
+						data={tidalData}
+						timeRange={timeRange}
+						harbor={closestHarbor}
+					/>
+				);
+			case "wind-speed-chart":
+				return (
+					<WindSpeedChart
+						key={chartId}
+						data={weatherData}
+						timeRange={timeRange}
+					/>
+				);
+			case "cloud-coverage-chart":
+				return (
+					<CloudCoverageChart
+						key={chartId}
+						data={weatherData}
+						timeRange={timeRange}
+					/>
+				);
+			default:
+				return null;
+		}
+	};
+
 	return (
 		<HomePageDiv>
 			<MapsContainer>
@@ -177,6 +254,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 									borderRadius: "5px",
 								},
 								"& .MuiSlider-markLabel": {
+									color: theme.textColor,
 									marginTop: 3,
 								},
 							}}
@@ -224,28 +302,29 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 				</TimeRangeSection>
 				<WeatherChart data={weatherData} timeRange={timeRange} />
 			</WeatherSection>
-			<ChartSection>
-				<TemperatureChart data={weatherData} timeRange={timeRange} />
-				<TidalChart
-					data={tidalData}
-					timeRange={timeRange}
-					harbor={closestHarbor}
-				/>
-				<WindSpeedChart data={weatherData} timeRange={timeRange} />
-				<CloudCoverageChart data={weatherData} timeRange={timeRange} />
+			<ChartSection list={chartOrder} setList={setChartOrder} animation={150}>
+				{chartOrder.map((chart: { id: string }) => renderChart(chart.id))}
 			</ChartSection>
 		</HomePageDiv>
 	);
 };
 
+// const StyledSortableGrid = styled(ReactSortable)``;
+
 export default HomePage;
 
-const ChartSection = styled(PrimaryContainer)`
+const SortableGridWrapper: React.FC<ReactSortableProps<any>> = (props) => (
+	<ReactSortable {...props} />
+);
+
+const ChartSection = styled(PrimaryContainer).attrs({
+	as: SortableGridWrapper,
+})`
 	flex: 1 0 90%;
 	margin: 0 10px 10px 10px;
 
 	display: grid;
-	grid-template-columns: repeat(2, 50%);
+	grid-template-columns: repeat(auto-fill, 50%);
 	grid-auto-rows: 480px;
 	overflow: hidden;
 `;

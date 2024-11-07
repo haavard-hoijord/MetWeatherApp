@@ -17,19 +17,42 @@ import {
 	PlacePicker,
 	SplitLayout,
 } from "@googlemaps/extended-component-library/react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 
 type HomePageMapProps = {
 	setLocation: (location: google.maps.places.Place) => void;
 };
 
 const MapComponent = ({ setLocation }: HomePageMapProps) => {
+	const theme = useTheme();
+
 	const [markerPosition, setMarkerPosition] =
-		useState<google.maps.LatLngAltitude>();
+		useState<google.maps.LatLngAltitude>(() => {
+			const savedPosition = localStorage.getItem("markerPosition");
+			return savedPosition
+				? JSON.parse(savedPosition)
+				: { lat: 0, lng: 0, altitude: 0 };
+		});
+
+	useEffect(() => {
+		localStorage.setItem(
+			"markerPosition",
+			JSON.stringify({
+				lat: markerPosition.lat,
+				lng: markerPosition.lng,
+				altitude: markerPosition.altitude,
+			})
+		);
+	}, [markerPosition]);
 
 	const [place, setPlace] = useState<google.maps.places.Place | undefined>(
 		undefined
 	);
+
+	useEffect(() => {
+		localStorage.setItem("place", JSON.stringify(place));
+	}, [place]);
+
 	const [placeService, setPlaceService] =
 		useState<google.maps.places.PlacesService | null>();
 	const [geoCoder, setGeoCoder] = useState<google.maps.Geocoder | null>();
@@ -65,13 +88,12 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 		setPlace(place);
 	};
 
-	// Handle map click to set a marker
-	const handleMapClick = (event: MapMouseEvent) => {
+	function handleGeocode(lat: number, lng: number) {
 		geoCoder
 			?.geocode({
 				location: {
-					lat: event.detail.latLng?.lat ?? 0,
-					lng: event.detail.latLng?.lng ?? 0,
+					lat: lat,
+					lng: lng,
 				},
 			})
 			.then(async (r: google.maps.GeocoderResponse) => {
@@ -93,6 +115,11 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 					focusPlace(map!, place);
 				}
 			});
+	}
+
+	// Handle map click to set a marker
+	const handleMapClick = (event: MapMouseEvent) => {
+		handleGeocode(event.detail.latLng?.lat ?? 0, event.detail.latLng?.lng ?? 0);
 	};
 
 	let apiIsLoaded = useApiIsLoaded();
@@ -106,34 +133,41 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 		setPlaceService(placesService);
 		setGeoCoder(new google.maps.Geocoder());
 
-		placesService.textSearch(
-			{
-				query: "Bouvet Stavanger",
-				location: { lat: 58.91674, lng: 5.732428 },
-			},
-			async (results, status) => {
-				if (status === google.maps.places.PlacesServiceStatus.OK) {
-					const placeResult = results?.[0];
-					if (placeResult) {
-						const place = new google.maps.places.Place({
-							// @ts-ignore
-							id: placeResult.place_id,
-						});
-						await place.fetchFields({
-							fields: [
-								"displayName",
-								"formattedAddress",
-								"location",
-								"id",
-								"editorialSummary",
-							],
-						});
+		if (markerPosition.lat !== 0 && markerPosition.lng !== 0) {
+			focusMap(map, markerPosition.lat, markerPosition.lng);
+			handleGeocode(markerPosition.lat ?? 0, markerPosition.lng ?? 0);
+		}
 
-						focusPlace(map!, place);
+		if (!location) {
+			placesService.textSearch(
+				{
+					query: "Bouvet Stavanger",
+					location: { lat: 58.91674, lng: 5.732428 },
+				},
+				async (results, status) => {
+					if (status === google.maps.places.PlacesServiceStatus.OK) {
+						const placeResult = results?.[0];
+						if (placeResult) {
+							const place = new google.maps.places.Place({
+								// @ts-ignore
+								id: placeResult.place_id,
+							});
+							await place.fetchFields({
+								fields: [
+									"displayName",
+									"formattedAddress",
+									"location",
+									"id",
+									"editorialSummary",
+								],
+							});
+
+							focusPlace(map!, place);
+						}
 					}
 				}
-			}
-		);
+			);
+		}
 	}, [apiIsLoaded, map]);
 
 	const overlayLayoutRef = useRef<TOverlayLayout>(null);
@@ -147,9 +181,10 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 						defaultZoom={15}
 						defaultCenter={{ lat: 58.91674, lng: 5.732428 }}
 						gestureHandling={"greedy"}
-						disableDefaultUI={true}
 						mapId={"5cb5153369603482"}
 						onClick={handleMapClick}
+						disableDefaultUI={true}
+						colorScheme={theme.theme === "dark" ? "DARK" : "LIGHT"}
 					>
 						<AdvancedMarker
 							position={{
@@ -196,14 +231,10 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 export default MapComponent;
 
 const MapContainer = styled.div`
-	--gmpx-color-surface: #f6f5ff;
-	--gmpx-color-on-primary: #f8e8ff;
-	--gmpx-color-on-surface: #000;
-	--gmpx-color-on-surface-variant: #636268;
-	--gmpx-color-primary: #8a5cf4;
-	--gmpx-fixed-panel-height-column-layout: 420px;
-	--gmpx-fixed-panel-width-row-layout: 340px;
-	--gmpx-font-size-base: 15px;
+	--gmpx-color-surface: ${({ theme }) => theme.background};
+	--gmpx-color-on-surface: ${({ theme }) => theme.textColor};
+	--gmpx-icon-color: ${({ theme }) => theme.iconColor};
+	--gmpx-border-color: ${({ theme }) => theme.borderColor};
 
 	width: 100%;
 	height: 100%;

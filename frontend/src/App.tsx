@@ -2,11 +2,25 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.tsx";
 import HomePage from "./Pages/HomePage.tsx";
-import styled, { createGlobalStyle, keyframes } from "styled-components";
+import styled, {
+	createGlobalStyle,
+	keyframes,
+	ThemeProvider,
+} from "styled-components";
+import GlobalStyle, { LightTheme, DarkTheme } from "./Styles";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function App() {
+	const [useDarkTheme, setDarkTheme] = useState(() => {
+		const savedTheme = localStorage.getItem("darkTheme");
+		return savedTheme ? JSON.parse(savedTheme) : true;
+	});
+
+	useEffect(() => {
+		localStorage.setItem("darkTheme", JSON.stringify(useDarkTheme));
+	}, [useDarkTheme]);
+
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -19,25 +33,32 @@ function App() {
 	};
 
 	return (
-		<BrowserRouter>
-			<Navbar changePage={changePage} />
-			{error && <ErrorModal error={error} setError={setError} />}
-			<Routes>
-				<Route
-					path="/"
-					element={
-						<HomePage
-							setError={setError}
-							loading={loading}
-							setLoading={setLoading}
-							apiUrl={apiUrl}
-						/>
-					}
+		<ThemeProvider theme={useDarkTheme ? LightTheme : DarkTheme}>
+			<GlobalStyle />
+			<BrowserRouter>
+				<Navbar
+					changePage={changePage}
+					setDarkTheme={setDarkTheme}
+					useDarkTheme={useDarkTheme}
 				/>
-			</Routes>
+				{error && <ErrorModal error={error} setError={setError} />}
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<HomePage
+								setError={setError}
+								loading={loading}
+								setLoading={setLoading}
+								apiUrl={apiUrl}
+							/>
+						}
+					/>
+				</Routes>
 
-			{loading && <GlobalLoading />}
-		</BrowserRouter>
+				{loading && <GlobalLoading />}
+			</BrowserRouter>
+		</ThemeProvider>
 	);
 }
 
@@ -48,7 +69,13 @@ const spin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const LoadingContainer = styled.div<{ fixed: boolean }>`
+type LoadingProps = {
+	fixed: boolean;
+};
+
+const LoadingContainer = styled.div.withConfig({
+	shouldForwardProp: (prop) => prop !== "fixed",
+})<LoadingProps>`
 	position: ${({ fixed }) => (fixed ? "fixed" : "absolute")};
 	top: 0;
 	left: 0;
