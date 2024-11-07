@@ -7,11 +7,10 @@ The frontend is made using React + Vite.js and uses the backend to retrieve the 
 
 # Examples
 Preview of the webapp
-![img.png](examples/img.png)
-![img.png](examples/img2.png)
+![Website preview](https://github.com/haavard-hoijord/MetWeatherApp/blob/main/examples/img.png?raw=true)
+![Website preview](https://github.com/haavard-hoijord/MetWeatherApp/blob/main/examples/img2.png?raw=true)
 
-Copy of the swagger definition for the backend:
-[swagger.json](examples/swagger.json)
+[Swagger definition file](examples/swagger.json)
 
 # Libraries
 - Backend
