@@ -1,175 +1,177 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 99%;
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 99%;
 }
 
-#root{
-    display: flex;
-    flex-direction: column;
-    height: 99vh;
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 99vh;
 }
 
 .tidal-water {
-    position: relative;
-    width: calc(100% - 40px);
-    flex-grow: 1;
-    margin: 20px;
-    height: 70vh;
+  position: relative;
+  width: calc(100% - 40px);
+  flex-grow: 1;
+  margin: 20px;
+  height: 70vh;
 
-    background: lightslategray;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  background: lightslategray;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .tidal-water::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg,
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
     rgba(255, 255, 255, 0) 20%,
     rgba(255, 255, 255, 0.4) 50%,
     rgba(255, 255, 255, 0) 80%
-    );
-    pointer-events: none;
-    border-radius: 15px;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+  );
+  pointer-events: none;
+  border-radius: 15px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .chart {
-    position: relative;
-    aspect-ratio: 3 / 1;
+  position: relative;
+  aspect-ratio: 3 / 1;
 }
 
 .loading-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 /* Spinner CSS */
 .loading {
-    border: 8px solid rgba(0, 0, 0, 0.1);
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.locations-container{
-    display: flex;
-    flex-grow: 1;
-    position: relative;
-    padding: 10px;
-    max-width: 400px;
-    margin-right: 20px;
-    width: 100%;
-    padding-bottom: 50px;
+.locations-container {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  padding: 10px;
+  max-width: 400px;
+  margin-right: 20px;
+  width: 100%;
+  padding-bottom: 50px;
 
-    background-color: #666363;
-    box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.3);
-    margin-bottom: 20px;
-    flex-flow: column;
-    border-radius: 15px;
+  background-color: #666363;
+  box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  flex-flow: column;
+  border-radius: 15px;
 }
 
 .locations {
-    max-height: 95%;
-    min-height: 95%;
-    overflow-y: auto;
+  max-height: 95%;
+  min-height: 95%;
+  overflow-y: auto;
 
-    background-color: #7d7d7d;
-    box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.2);
-    padding: 10px 10px 0 10px;
-    border-radius: 15px;
+  background-color: #7d7d7d;
+  box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px 10px 0 10px;
+  border-radius: 15px;
 }
 
-.location-block{
-    background: darkgray;
-    border-radius: 5px;
-    margin: 10px;
-    padding: 10px;
+.location-block {
+  background: darkgray;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
 }
 
-.tidal-water{
-    padding-top: 30px;
-    display: flex;
+.tidal-water {
+  padding-top: 30px;
+  display: flex;
 }
 
 .add-location {
-    width: 90%;
-    transform: translateX(5%);
-    height: 10%;
-    margin-top: 7%;
+  width: 90%;
+  transform: translateX(5%);
+  height: 10%;
+  margin-top: 7%;
 
-    color: #90caf9; /* Muted blue color for the links */
-    text-decoration: none;
-    background-color: #333;
-    box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.2);
+  color: #90caf9; /* Muted blue color for the links */
+  text-decoration: none;
+  background-color: #333;
+  box-shadow: 10px 10px 8px rgba(0, 0, 0, 0.2);
 
-    border-radius: 4px;
-    transition:
-            background-color 0.3s ease,
-            color 0.3s ease;
+  border-radius: 4px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 
-    &:hover {
-        background-color: #555; /* Slightly lighter gray on hover */
-        color: #ffffff; /* Turn text white on hover */
-    }
+  &:hover {
+    background-color: #555; /* Slightly lighter gray on hover */
+    color: #ffffff; /* Turn text white on hover */
+  }
 }
 
 .remove-location {
-    position: relative;
-    float: right;
-    top: -20px;
-    right: 5px;
-    color: red;
-    padding: 0;
-    height: fit-content;
-    width: 20px;
+  position: relative;
+  float: right;
+  top: -20px;
+  right: 5px;
+  color: red;
+  padding: 0;
+  height: fit-content;
+  width: 20px;
 }
 
 .toggle-switch {
-    position: relative;
-    float: left;
-    top: 15px;
-    left: 15px;
-    margin-right: 5px;
-    --switch-width: 40px;
-    --switch-height: 20px;
-    --knob-size: 12px;
+  position: relative;
+  float: left;
+  top: 15px;
+  left: 15px;
+  margin-right: 5px;
+  --switch-width: 40px;
+  --switch-height: 20px;
+  --knob-size: 12px;
 }
 
 .block-color {
-    border-radius: 5px;
-    height: 10px;
-    padding: 5px;
-    margin: 1%;
+  border-radius: 5px;
+  height: 10px;
+  padding: 5px;
+  margin: 1%;
 }
 
 .location-dropdown {
-    width: 50%;
-    padding: 5px;
-    font-size: 18px;
+  width: 50%;
+  padding: 5px;
+  font-size: 18px;
 }

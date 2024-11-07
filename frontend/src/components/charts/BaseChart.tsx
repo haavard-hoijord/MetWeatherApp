@@ -12,6 +12,8 @@ import {
 import { TidalWaterValue } from "../../types/TidalWater";
 import { ReactElement } from "react";
 import { LocalLoading } from "../../App.tsx";
+import styled from "styled-components";
+import { SecondaryContainer } from "../../Styles.ts";
 
 type ChartInfo = {
   dataKey: string;
@@ -118,7 +120,7 @@ const BaseChart = ({
   return (
     <>
       {!data && <LocalLoading />}
-      <div className="info-chart secondary">
+      <InfoChart className="info-chart">
         <h2>{info.name}</h2>
         {info.subTitle && <h3>{info.subTitle}</h3>}
         <ResponsiveContainer width="100%" height="100%">
@@ -262,9 +264,18 @@ const BaseChart = ({
             )}
           </AreaChart>
         </ResponsiveContainer>
-      </div>
+      </InfoChart>
     </>
   );
 };
 
 export default BaseChart;
+
+export const InfoChart = styled(SecondaryContainer)`
+  position: relative;
+  margin: 10px;
+
+  h3 {
+    color: lightslategrey;
+  }
+`;
