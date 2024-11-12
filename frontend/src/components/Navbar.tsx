@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { NavLink as Link } from "react-router-dom";
+import i18n from "../i18n.ts";
+import { Trans, useTranslation } from "react-i18next";
 
 // Nav: The container for the entire navigation bar
 export const Nav = styled.nav`
@@ -53,17 +55,33 @@ export const Title = styled.h1`
 `;
 
 const Navbar = ({ changePage, setDarkTheme, useDarkTheme }: any) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<Nav>
-				<Title>Weather App</Title>
+				<Title>{t("title")}</Title>
 				<NavMenu>
 					<NavLink onClick={changePage} to="/">
-						Home
+						{t("page.home")}
 					</NavLink>
-					<ToggleButton onClick={() => setDarkTheme(!useDarkTheme)}>
+					<ThemeToggle onClick={() => setDarkTheme(!useDarkTheme)}>
 						{useDarkTheme ? "🌙" : "☀️"}
-					</ToggleButton>
+					</ThemeToggle>
+
+					<LanguageSection>
+						{Object.values(i18n.options.supportedLngs as string[])
+							.filter((s) => s !== "cimode")
+							.map((lng) => (
+								<LanguageButton
+									lng={lng}
+									key={lng}
+									type="submit"
+									onClick={() => i18n.changeLanguage(lng)}
+								>
+									<Trans i18nKey={`languages.${lng}`} />
+								</LanguageButton>
+							))}
+					</LanguageSection>
 				</NavMenu>
 			</Nav>
 		</>
@@ -72,7 +90,7 @@ const Navbar = ({ changePage, setDarkTheme, useDarkTheme }: any) => {
 
 export default Navbar;
 
-const ToggleButton = styled.button`
+const ThemeToggle = styled.button`
 	background: none;
 	border: none;
 	font-size: 1.5em;
@@ -81,6 +99,30 @@ const ToggleButton = styled.button`
 	position: absolute;
 	top: 1rem;
 	right: 1rem;
+
+	&:hover {
+		opacity: 0.8;
+	}
+`;
+
+const LanguageSection = styled.div`
+	display: flex;
+	align-items: center;
+	position: absolute;
+	right: 1rem;
+`;
+
+const LanguageButton = styled.button<{ lng: string }>`
+	background: none;
+	border: none;
+	font-size: 1em;
+	cursor: pointer;
+	color: ${({ theme }) => theme.textColor}; // Icon color matches text color
+	font-weight: ${({ lng }) =>
+		i18n.resolvedLanguage === lng ? "bold" : "normal"};
+	background: ${({ lng }) =>
+		lng === i18n.resolvedLanguage && "rgba(255, 255, 255, 0.1)"};
+	min-width: 150px;
 
 	&:hover {
 		opacity: 0.8;

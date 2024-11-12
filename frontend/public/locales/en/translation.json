@@ -1,0 +1,17 @@
+{
+  "title": "Met.no Weather app",
+  "page.home": "Home",
+  "languages.en": "English",
+  "languages.no": "Norwegian",
+  "chart.weather": "Weather",
+  "chart.cloudCoverage": "Cloud coverage",
+  "chart.temperature": "Temperature",
+  "chart.windSpeed": "Wind speed",
+  "chart.precipitation": "Precipitation",
+  "chart.pressure": "Pressure",
+  "chart.tidalWaterLevel": {
+    "title": "Tidal water level",
+    "harbor": "> Harbor: {{harbor}}"
+  },
+  "timeRange": "Time range"
+}

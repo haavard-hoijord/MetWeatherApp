@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import BaseChart, { InfoChart } from "./BaseChart.tsx";
 import { LabelProps } from "recharts";
 import styled, { useTheme } from "styled-components";
@@ -10,6 +11,7 @@ const WeatherChart = ({
 	timeRange: Date[] | undefined;
 }) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	interface CustomLabelProps extends LabelProps {
 		iconUrl: string;
@@ -39,7 +41,8 @@ const WeatherChart = ({
 				info={{
 					dataKey: "details.airTemperature",
 					timeKey: "time",
-					name: "Weather",
+					name: t("chart.weather"),
+					id: "weather",
 					strokeColor: "white",
 					fillColor: "none",
 					strokeWith: 3,
@@ -59,24 +62,24 @@ const WeatherChart = ({
 					],
 					label: (x, y, value, index) => {
 						return (
-							<>
-								<CustomImageLabel
+							<ResponsiveLabel>
+								<image
+									href={`https://raw.githubusercontent.com/metno/weathericons/refs/heads/main/weather/svg/${data?.timeSteps[index as number].symbolCode}.svg`}
 									x={x - 16}
 									y={y - 40}
-									iconUrl={`https://raw.githubusercontent.com/metno/weathericons/refs/heads/main/weather/svg/${data?.timeSteps[index as number].symbolCode}.svg`}
+									width={32}
+									height={32}
 								/>
-								{index % 2 === 0 || (filteredData?.length ?? 0) <= 40 ? (
-									<text
-										x={x}
-										y={y}
-										dy={25}
-										fill={theme.textColor}
-										textAnchor="middle"
-									>
-										{value}°C
-									</text>
-								) : null}
-							</>
+								<text
+									x={x}
+									y={y}
+									dy={25}
+									fill={theme.textColor}
+									textAnchor="middle"
+								>
+									{value}°C
+								</text>
+							</ResponsiveLabel>
 						);
 					},
 				}}
@@ -84,6 +87,27 @@ const WeatherChart = ({
 		</WeatherChartStyle>
 	);
 };
+
+const ResponsiveLabel = styled.g`
+	display: none;
+
+	&:nth-of-type(2n) {
+		@media (min-width: 900px) {
+			&:nth-of-type(3n) {
+				display: block;
+			}
+		}
+		@media (min-width: 1300px) {
+			&:nth-of-type(2n) {
+				display: block;
+			}
+		}
+	}
+
+	@media (min-width: 2400px) {
+		display: block;
+	}
+`;
 
 export default WeatherChart;
 

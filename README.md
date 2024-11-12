@@ -34,3 +34,5 @@ Preview of the webapp
   - Styled-components
   - Sortablejs
   - react-sortablejs
+  - i18next
+  - react-i18next

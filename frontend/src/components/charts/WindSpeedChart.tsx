@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import BaseChart from "./BaseChart.tsx";
 import { LabelProps } from "recharts";
 
@@ -8,6 +9,8 @@ const WindSpeedChart = ({
 	data: WeatherData | undefined;
 	timeRange: Date[] | undefined;
 }) => {
+	const { t } = useTranslation();
+
 	return (
 		<BaseChart
 			data={data?.timeSteps}
@@ -15,7 +18,8 @@ const WindSpeedChart = ({
 			info={{
 				dataKey: "details.windSpeed",
 				timeKey: "time",
-				name: "Wind Speed",
+				name: t("chart.windSpeed"),
+				id: "wind-speed",
 				strokeColor: "white",
 				strokeWith: 2,
 				useGradient: true,

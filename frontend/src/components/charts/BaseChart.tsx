@@ -2,7 +2,6 @@ import {
 	Area,
 	AreaChart,
 	LabelList,
-	LabelProps,
 	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
@@ -19,6 +18,7 @@ type ChartInfo = {
 	dataKey: string;
 	timeKey: string;
 	name: string;
+	id: string;
 	strokeColor: string;
 	strokeWith?: number;
 	fillColor?: string;
@@ -127,7 +127,7 @@ const BaseChart = ({
 						{info.useGradient && (
 							<defs>
 								<linearGradient
-									id={`gradiantColor${info.name.replace(" ", "")}`}
+									id={`gradiantColor${info.id}`}
 									x1="1"
 									y1="1"
 									x2="1"
@@ -165,6 +165,7 @@ const BaseChart = ({
 								xAxisId="day"
 								height={35}
 								dy={4}
+								interval="preserveStartEnd"
 							/>
 						)}
 						{!info.disableXAxis && (
@@ -174,6 +175,7 @@ const BaseChart = ({
 								dy={5}
 								stroke={theme.textColor}
 								dataKey={info.timeKey}
+								interval="preserveStartEnd"
 								tickFormatter={(value, index) => {
 									const date = new Date(value);
 									return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
@@ -205,6 +207,7 @@ const BaseChart = ({
 								tickCount={10}
 								domain={domain}
 								stroke={theme.textColor}
+								interval="preserveStartEnd"
 							/>
 						)}
 						<Area
@@ -212,7 +215,7 @@ const BaseChart = ({
 							stroke={info.strokeColor}
 							fill={
 								info.useGradient
-									? `url(#gradiantColor${info.name.replace(" ", "")})`
+									? `url(#gradiantColor${info.id})`
 									: info.fillColor
 							}
 							strokeWidth={info.strokeWith ?? 3}
@@ -263,7 +266,6 @@ export default BaseChart;
 export const InfoChart = styled(SecondaryContainer)`
 	position: relative;
 	margin: 10px;
-
 	h3 {
 		color: lightslategrey;
 	}

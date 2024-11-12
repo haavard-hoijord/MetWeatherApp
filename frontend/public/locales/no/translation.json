@@ -1,0 +1,17 @@
+{
+  "title": "Met.no Vær app",
+  "page.home": "Hjem",
+  "languages.en": "Engelsk",
+  "languages.no": "Norsk",
+  "chart.weather": "Vær",
+  "chart.cloudCoverage": "Skydekke",
+  "chart.temperature": "Temperatur",
+  "chart.windSpeed": "Vindstyrke",
+  "chart.precipitation": "Nedbør",
+  "chart.pressure": "Trykk",
+  "chart.tidalWaterLevel": {
+    "title": "Tidevannsnivå",
+    "harbor": "> Havn: {{harbor}}"
+  },
+  "timeRange": "Tidsrom"
+}

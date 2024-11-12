@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import BaseChart from "./BaseChart.tsx";
 
 const CloudCoverageChart = ({
@@ -7,6 +8,8 @@ const CloudCoverageChart = ({
 	data: WeatherData | undefined;
 	timeRange: Date[] | undefined;
 }) => {
+	const { t } = useTranslation();
+
 	return (
 		<BaseChart
 			data={data?.timeSteps}
@@ -14,7 +17,8 @@ const CloudCoverageChart = ({
 			info={{
 				dataKey: "details.cloudAreaFraction",
 				timeKey: "time",
-				name: "Cloud Coverage",
+				name: t("chart.cloudCoverage"),
+				id: "cloud-coverage",
 				strokeColor: "white",
 				strokeWith: 2,
 				useGradient: true,

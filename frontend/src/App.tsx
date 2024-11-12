@@ -8,6 +8,7 @@ import styled, {
 	ThemeProvider,
 } from "styled-components";
 import GlobalStyle, { LightTheme, DarkTheme } from "./Styles";
+import i18n from "./i18n.ts";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -23,6 +24,28 @@ function App() {
 
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const [language, setLanguage] = useState(() => {
+		const savedLanguage = localStorage.getItem("i18nextLng");
+		return savedLanguage ? savedLanguage : i18n.language;
+	});
+
+	useEffect(() => {
+		i18n.changeLanguage(language);
+		localStorage.setItem("i18nextLng", language);
+	}, [language]);
+
+	useEffect(() => {
+		const handleLanguageChange = (lng: string) => {
+			setLanguage(lng); // Update state to trigger re-render
+		};
+
+		i18n.on("languageChanged", handleLanguageChange);
+
+		return () => {
+			i18n.off("languageChanged", handleLanguageChange);
+		};
+	}, []);
 
 	useEffect(() => {
 		setError(null);

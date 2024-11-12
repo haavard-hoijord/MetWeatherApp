@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import BaseChart from "./BaseChart.tsx";
 
 const TemperatureChart = ({
@@ -7,6 +8,8 @@ const TemperatureChart = ({
 	data: WeatherData | undefined;
 	timeRange: Date[] | undefined;
 }) => {
+	const { t } = useTranslation();
+
 	return (
 		<BaseChart
 			data={data?.timeSteps}
@@ -14,7 +17,8 @@ const TemperatureChart = ({
 			info={{
 				dataKey: "details.airTemperature",
 				timeKey: "time",
-				name: "Temperature",
+				name: t("chart.temperature"),
+				id: "temperature",
 				strokeColor: "",
 				strokeWith: 3,
 				useGradient: true,

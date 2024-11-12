@@ -1,6 +1,7 @@
 import { TidalWater } from "../../types/TidalWater";
 import BaseChart from "./BaseChart.tsx";
 import { Harbor } from "../../types/Harbor";
+import { useTranslation } from "react-i18next";
 
 const TidalChart = ({
 	data,
@@ -11,6 +12,8 @@ const TidalChart = ({
 	harbor: Harbor | undefined;
 	timeRange: Date[] | undefined;
 }) => {
+	const { t } = useTranslation();
+
 	return (
 		<BaseChart
 			data={data?.values}
@@ -18,7 +21,8 @@ const TidalChart = ({
 			info={{
 				dataKey: "surge",
 				timeKey: "timeUtc",
-				name: "Tidal Water",
+				name: t("chart.tidalWaterLevel.title"),
+				id: "tidal-water-level",
 				strokeColor: "",
 				strokeWith: 0,
 				useGradient: true,
@@ -41,7 +45,9 @@ const TidalChart = ({
 					"#d8faff", // Pale Cyan
 					"#ecfdff", // Lightest Cyan
 				],
-				subTitle: harbor ? " > Harbor: " + harbor.name : "",
+				subTitle: harbor
+					? t("chart.tidalWaterLevel.harbor", { harbor: harbor.name })
+					: "",
 				yAxisDomain: [-0.1, 0.1],
 				gradientRange: [-0.2, 0.02],
 				formatter: (value: any) =>

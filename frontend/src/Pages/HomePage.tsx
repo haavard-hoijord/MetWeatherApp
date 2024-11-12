@@ -16,10 +16,12 @@ import { Slider } from "@mui/material";
 import { PrimaryContainer, SecondaryContainer } from "../Styles.ts";
 import styled, { useTheme } from "styled-components";
 import { ReactSortable, ReactSortableProps } from "react-sortablejs";
+import { useTranslation } from "react-i18next";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
+	const { t } = useTranslation();
 	const theme = useTheme();
 
 	const [location, setLocation] = useState<google.maps.places.Place>(() => {
@@ -246,7 +248,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 			</MapsContainer>
 			<WeatherSection>
 				<TimeRangeSection>
-					<h2>Time Range</h2>
+					<h2>{t("timeRange")}</h2>
 					<DateSlider>
 						<Slider
 							sx={{
@@ -325,6 +327,10 @@ const ChartSection = styled(PrimaryContainer).attrs({
 
 	display: grid;
 	grid-template-columns: repeat(auto-fill, 50%);
+
+	@media (max-width: 1000px) {
+		grid-template-columns: repeat(auto-fill, 100%);
+	}
 	grid-auto-rows: 480px;
 	overflow: hidden;
 `;
