@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import BaseChart, { InfoChart } from "./BaseChart.tsx";
-import { LabelProps } from "recharts";
+import BaseChart from "./BaseChart.tsx";
 import styled, { useTheme } from "styled-components";
+import { InfoChart } from "../../Styles.ts";
 
 const WeatherChart = ({
 	data,
@@ -12,27 +12,6 @@ const WeatherChart = ({
 }) => {
 	const theme = useTheme();
 	const { t } = useTranslation();
-
-	interface CustomLabelProps extends LabelProps {
-		iconUrl: string;
-	}
-
-	const CustomImageLabel: React.FC<CustomLabelProps> = ({ x, y, iconUrl }) => {
-		return <image href={iconUrl} x={x} y={y} width={32} height={32} />;
-	};
-
-	const filteredData = data?.timeSteps
-		.filter((s) => s.symbolCode)
-		.filter((d: any) => {
-			if (!timeRange) return true;
-
-			const valueTime = new Date(d["time"]);
-			const startTime = timeRange[0];
-			const endTime = timeRange[1];
-
-			return valueTime >= startTime && valueTime <= endTime;
-		});
-
 	return (
 		<WeatherChartStyle>
 			<BaseChart
@@ -49,6 +28,7 @@ const WeatherChart = ({
 					useGradient: false,
 					disableTooltip: true,
 					usePadding: true,
+					suffix: data?.units.airTemperature === "celsius" ? "°C" : "°F",
 					dot: true,
 					yAxisDomain: [
 						Math.min(
@@ -62,7 +42,7 @@ const WeatherChart = ({
 					],
 					label: (x, y, value, index) => {
 						return (
-							<ResponsiveLabel>
+							<WeatherLabel>
 								<image
 									href={`https://raw.githubusercontent.com/metno/weathericons/refs/heads/main/weather/svg/${data?.timeSteps[index as number].symbolCode}.svg`}
 									x={x - 16}
@@ -77,9 +57,10 @@ const WeatherChart = ({
 									fill={theme.textColor}
 									textAnchor="middle"
 								>
-									{value}°C
+									{value}
+									{data?.units.airTemperature === "celsius" ? "°C" : "°F"}
 								</text>
-							</ResponsiveLabel>
+							</WeatherLabel>
 						);
 					},
 				}}
@@ -88,8 +69,10 @@ const WeatherChart = ({
 	);
 };
 
-const ResponsiveLabel = styled.g`
+const WeatherLabel = styled.g`
 	display: none;
+	font-weight: bold;
+	font-size: small;
 
 	&:nth-of-type(2n) {
 		@media (min-width: 900px) {

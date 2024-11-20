@@ -106,6 +106,7 @@ const LoadingContainer = styled.div.withConfig({
 	height: ${({ fixed }) => (fixed ? "100vh" : "100%")};
 	z-index: 1000;
 	backdrop-filter: blur(3px) brightness(50%);
+	border-radius: 15px;
 `;
 
 const LoadingSpinner = styled.div`

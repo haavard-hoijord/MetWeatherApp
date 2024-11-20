@@ -13,7 +13,7 @@ const TidalChart = ({
 	timeRange: Date[] | undefined;
 }) => {
 	const { t } = useTranslation();
-
+	if (!harbor) return null;
 	return (
 		<BaseChart
 			data={data?.values}

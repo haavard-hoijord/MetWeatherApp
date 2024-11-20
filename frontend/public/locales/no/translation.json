@@ -8,10 +8,12 @@
   "chart.temperature": "Temperatur",
   "chart.windSpeed": "Vindstyrke",
   "chart.precipitation": "Nedbør",
-  "chart.pressure": "Trykk",
+  "chart.airPressure": "Lufttrykk",
+  "chart.humidity": "Fuktighet",
   "chart.tidalWaterLevel": {
     "title": "Tidevannsnivå",
     "harbor": "> Havn: {{harbor}}"
   },
-  "timeRange": "Tidsrom"
+  "timeRange": "Tidsrom",
+  "directions": "Veibeskrivelse"
 }

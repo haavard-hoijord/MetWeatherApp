@@ -33,7 +33,7 @@ const CloudCoverageChart = ({
 				yAxisDomain: [0, 100],
 				gradientRange: [0, 100],
 				dot: true,
-				suffix: "%",
+				suffix: data?.units.cloudAreaFraction ?? "%",
 				usePadding: true,
 			}}
 		/>

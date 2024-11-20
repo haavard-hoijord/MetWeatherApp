@@ -5,7 +5,8 @@ import { Trans, useTranslation } from "react-i18next";
 
 // Nav: The container for the entire navigation bar
 export const Nav = styled.nav`
-	background-color: #333; /* Dark gray background for the navbar */
+	background: var(--primary-color);
+	color: ${({ theme }) => theme.textColor}; // Text color matches theme
 	height: auto;
 	padding: 20px 20px;
 	box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2); /* Subtle shadow */
@@ -49,7 +50,7 @@ export const NavLink = styled(Link)`
 
 // Title: The title of the website, displayed above the buttons
 export const Title = styled.h1`
-	color: #fff;
+	color: ${({ theme }) => theme.textColor}; // Text color matches theme
 	font-size: 24px;
 	margin: 0 0 25px;
 `;
@@ -121,7 +122,7 @@ const LanguageButton = styled.button<{ lng: string }>`
 	font-weight: ${({ lng }) =>
 		i18n.resolvedLanguage === lng ? "bold" : "normal"};
 	background: ${({ lng }) =>
-		lng === i18n.resolvedLanguage && "rgba(255, 255, 255, 0.1)"};
+		lng === i18n.resolvedLanguage && "var(--secondary-color)"};
 	min-width: 150px;
 
 	&:hover {

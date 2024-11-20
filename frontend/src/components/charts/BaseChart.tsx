@@ -12,7 +12,7 @@ import { TidalWaterValue } from "../../types/TidalWater";
 import { ReactElement } from "react";
 import { LocalLoading } from "../../App.tsx";
 import styled, { useTheme } from "styled-components";
-import { SecondaryContainer } from "../../Styles.ts";
+import { InfoChart, SecondaryContainer } from "../../Styles.ts";
 
 type ChartInfo = {
 	dataKey: string;
@@ -46,9 +46,26 @@ const BaseChart = ({
 	info: ChartInfo;
 	timeRange: Date[] | undefined;
 }) => {
-	if (!data) return null;
+	if (!data)
+		return (
+			<InfoChart className="info-chart">
+				<h2>{info.name}</h2>
+				{info.subTitle && <h3>{info.subTitle}</h3>}
+				<LocalLoading />
+			</InfoChart>
+		);
 
 	const theme = useTheme(); // Access the current theme
+
+	const filteredData = data.filter((d: any) => {
+		if (!timeRange) return true;
+
+		const valueTime = new Date(d[info.timeKey]);
+		const startTime = timeRange[0];
+		const endTime = timeRange[1];
+
+		return valueTime > startTime && valueTime < endTime;
+	});
 
 	function getNestedValue(obj: any, path: string): any {
 		const val = path.split(".").reduce((acc, key) => acc && acc[key], obj);
@@ -89,8 +106,7 @@ const BaseChart = ({
 
 	const pointTime = (point: TidalWaterValue | WeatherTimeStep) =>
 		(point as unknown as any)[info.timeKey];
-
-	const dailyTicks = data
+	const dailyTicks = filteredData
 		.reduce<dailyTick[]>((acc, point, index) => {
 			const date = new Date(pointTime(point));
 			const dayString = date.toLocaleDateString();
@@ -103,24 +119,14 @@ const BaseChart = ({
 			return acc;
 		}, [])
 		.map((tick) => tick.time);
-
 	return (
 		<>
-			{!data && <LocalLoading />}
 			<InfoChart className="info-chart">
 				<h2>{info.name}</h2>
 				{info.subTitle && <h3>{info.subTitle}</h3>}
 				<ResponsiveContainer width="100%" height="100%">
 					<AreaChart
-						data={data.filter((d: any) => {
-							if (!timeRange) return true;
-
-							const valueTime = new Date(d[info.timeKey]);
-							const startTime = timeRange[0];
-							const endTime = timeRange[1];
-
-							return valueTime > startTime && valueTime < endTime;
-						})}
+						data={filteredData}
 						margin={{ top: 20, left: 40, right: 40, bottom: 80 }}
 						title={info.name}
 					>
@@ -152,10 +158,10 @@ const BaseChart = ({
 
 						{!info.disableXAxis && (
 							<XAxis
+								padding={info.usePadding ? { left: 35, right: 35 } : {}}
 								dataKey={info.timeKey}
 								stroke={theme.textColor}
 								ticks={dailyTicks}
-								style={{ fontWeight: "bold" }}
 								tickFormatter={(value) => {
 									const date = new Date(value);
 									return `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
@@ -165,7 +171,9 @@ const BaseChart = ({
 								xAxisId="day"
 								height={35}
 								dy={4}
-								interval="preserveStartEnd"
+								fontSize={"small"}
+								fontWeight={"bold"}
+								interval={0}
 							/>
 						)}
 						{!info.disableXAxis && (
@@ -175,7 +183,7 @@ const BaseChart = ({
 								dy={5}
 								stroke={theme.textColor}
 								dataKey={info.timeKey}
-								interval="preserveStartEnd"
+								interval="equidistantPreserveStart"
 								tickFormatter={(value, index) => {
 									const date = new Date(value);
 									return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
@@ -202,15 +210,16 @@ const BaseChart = ({
 									info.formatter
 										? info.formatter
 										: (value: number) =>
-												`${value.toFixed(value === Math.round(value) ? undefined : 2)}${info.suffix ? info.suffix : ""}`
+												`${value}${info.suffix ? info.suffix : ""}`
 								}
 								tickCount={10}
 								domain={domain}
 								stroke={theme.textColor}
-								interval="preserveStartEnd"
+								interval="equidistantPreserveStart"
 							/>
 						)}
 						<Area
+							animationDuration={500}
 							dataKey={info.dataKey}
 							stroke={info.strokeColor}
 							fill={
@@ -262,11 +271,3 @@ const BaseChart = ({
 };
 
 export default BaseChart;
-
-export const InfoChart = styled(SecondaryContainer)`
-	position: relative;
-	margin: 10px;
-	h3 {
-		color: lightslategrey;
-	}
-`;

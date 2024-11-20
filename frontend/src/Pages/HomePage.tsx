@@ -1,5 +1,3 @@
-// noinspection CssUnresolvedCustomProperty
-
 import { Page } from "../types/Page";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import MapComponent from "../components/MapComponent.tsx";
@@ -17,6 +15,9 @@ import { PrimaryContainer, SecondaryContainer } from "../Styles.ts";
 import styled, { useTheme } from "styled-components";
 import { ReactSortable, ReactSortableProps } from "react-sortablejs";
 import { useTranslation } from "react-i18next";
+import PrecipitationChart from "../components/charts/PrecipitationChart.tsx";
+import HumidityChart from "../components/charts/HumidityChart.tsx";
+import AirPressureChart from "../components/charts/AirPressureChart.tsx";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -28,7 +29,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 		const savedLocation = localStorage.getItem("location");
 		return savedLocation ? JSON.parse(savedLocation) : undefined;
 	});
-	const [position, setPosition] = useState<{ lat: number; lng: number }>({
+	const [_, setPosition] = useState<{ lat: number; lng: number }>({
 		lat: 0,
 		lng: 0,
 	});
@@ -94,15 +95,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 		return () => clearInterval(interval);
 	}, []);
 
-	const fetchInfo = async (
-		pos: { lat: number; lng: number },
-		async = false
-	) => {
-		if (!async) {
-			setLoading(true);
-			setError(null);
-		}
-
+	const fetchInfo = async (pos: { lat: number; lng: number }) => {
 		try {
 			const response = await axios.get(
 				`${apiUrl}/harbor/closest?latitude=${pos.lat}&longitude=${pos.lng}`,
@@ -129,107 +122,99 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 		} catch (err: any) {
 			console.error(err.message);
 			setError(err.message);
-		} finally {
-			if (!async) {
-				setLoading(false);
-			}
 		}
 	};
 
-	type loctFunc = {
+	type locFunc = {
 		lat: () => number;
 		lng: () => number;
 	};
 
-	type loct = {
+	type locNumber = {
 		lat: number;
 		lng: number;
 	};
 
 	useEffect(() => {
 		setTidalData(undefined);
+		setWeatherData(undefined);
 		setClosestHarbor(undefined);
 
 		if (!location) return;
 
-		const loct = location?.location as loctFunc | loct;
-		let pos = { lat: 0, lng: 0 };
+		const loc = location?.location as locFunc | locNumber;
+		let pos: { lng: number; lat: number };
 
 		if (
 			typeof location?.location?.["lat"] === "function" &&
 			typeof location?.location?.["lng"] === "function"
 		) {
 			pos = {
-				lat: parseFloat((loct as loctFunc).lat().toFixed(4) ?? "0"),
-				lng: parseFloat((loct as loctFunc).lng().toFixed(4) ?? "0"),
+				lat: parseFloat((loc as locFunc).lat().toFixed(4) ?? "0"),
+				lng: parseFloat((loc as locFunc).lng().toFixed(4) ?? "0"),
 			};
 		} else {
 			pos = {
-				lat: parseFloat((loct as loct).lat.toFixed(4) ?? "0"),
-				lng: parseFloat((loct as loct).lng.toFixed(4) ?? "0"),
+				lat: parseFloat((loc as locNumber).lat.toFixed(4) ?? "0"),
+				lng: parseFloat((loc as locNumber).lng.toFixed(4) ?? "0"),
 			};
 		}
 		setPosition(pos);
-		fetchInfo(pos);
+		fetchInfo(pos).then((_) => {});
 	}, [location]);
 
+	type chartEntry = {
+		id: string;
+		component: React.ComponentType<any>;
+	};
+
+	const allCharts: chartEntry[] = [
+		{
+			id: "temperature-chart",
+			component: TemperatureChart,
+		},
+		{
+			id: "tidal-chart",
+			component: TidalChart,
+		},
+		{
+			id: "wind-speed-chart",
+			component: WindSpeedChart,
+		},
+		{
+			id: "cloud-coverage-chart",
+			component: CloudCoverageChart,
+		},
+		{
+			id: "air-pressure-chart",
+			component: AirPressureChart,
+		},
+		{
+			id: "humidity-chart",
+			component: HumidityChart,
+		},
+		{
+			id: "precipitation-chart",
+			component: PrecipitationChart,
+		},
+	];
+
 	const [chartOrder, setChartOrder] = useState(() => {
-		const savedOrder = localStorage.getItem("chartOrder");
-		return savedOrder
-			? JSON.parse(savedOrder)
-			: [
-					{ id: "temperature-chart" },
-					{ id: "tidal-chart" },
-					{ id: "wind-speed-chart" },
-					{ id: "cloud-coverage-chart" },
-				];
+		const savedOrder =
+			JSON.parse(localStorage.getItem("chartOrder") ?? "") || [];
+		return [
+			...savedOrder
+				.map((id: any) => allCharts.find((chart) => chart.id === id))
+				.filter(Boolean),
+			...allCharts.filter((chart) => !savedOrder.includes(chart.id)), // Append new charts
+		];
 	});
 
 	// Save order to localStorage whenever chartOrder changes
 	useEffect(() => {
-		localStorage.setItem("chartOrder", JSON.stringify(chartOrder));
+		const ids = chartOrder.map((chart: any) => chart.id);
+		localStorage.setItem("chartOrder", JSON.stringify(ids));
 	}, [chartOrder]);
-
-	const renderChart = (chartId: string) => {
-		switch (chartId) {
-			case "temperature-chart":
-				return (
-					<TemperatureChart
-						key={chartId}
-						data={weatherData}
-						timeRange={timeRange}
-					/>
-				);
-			case "tidal-chart":
-				return (
-					<TidalChart
-						key={chartId}
-						data={tidalData}
-						timeRange={timeRange}
-						harbor={closestHarbor}
-					/>
-				);
-			case "wind-speed-chart":
-				return (
-					<WindSpeedChart
-						key={chartId}
-						data={weatherData}
-						timeRange={timeRange}
-					/>
-				);
-			case "cloud-coverage-chart":
-				return (
-					<CloudCoverageChart
-						key={chartId}
-						data={weatherData}
-						timeRange={timeRange}
-					/>
-				);
-			default:
-				return null;
-		}
-	};
-
 	return (
 		<HomePageDiv>
 			<MapsContainer>
@@ -243,7 +228,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 						setLoading(false);
 					}}
 				>
-					<MapComponent setLocation={setLocation} />
+					<MapComponent setLocation={setLocation} setLoading={setLoading} />
 				</APIProvider>
 			</MapsContainer>
 			<WeatherSection>
@@ -260,7 +245,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 									marginTop: 3,
 								},
 							}}
-							valueLabelFormat={(value: number, index: number) => {
+							valueLabelFormat={(value: number, _: number) => {
 								let date = new Date(value);
 								date = new Date(
 									Date.UTC(
@@ -305,13 +290,21 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 				<WeatherChart data={weatherData} timeRange={timeRange} />
 			</WeatherSection>
 			<ChartSection list={chartOrder} setList={setChartOrder} animation={150}>
-				{chartOrder.map((chart: { id: string }) => renderChart(chart.id))}
+				{chartOrder.map((chart: chartEntry) => {
+					const ChartComponent = chart.component;
+					return (
+						<ChartComponent
+							key={chart.id}
+							data={chart.id === "tidal-chart" ? tidalData : weatherData}
+							timeRange={timeRange}
+							harbor={closestHarbor}
+						/>
+					);
+				})}
 			</ChartSection>
 		</HomePageDiv>
 	);
 };
-
-// const StyledSortableGrid = styled(ReactSortable)``;
 
 export default HomePage;
 
@@ -335,6 +328,7 @@ const ChartSection = styled(PrimaryContainer).attrs({
 	overflow: hidden;
 `;
 
+// noinspection CssUnusedSymbol
 const DateSlider = styled.div`
 	display: flex;
 	flex-flow: row;

@@ -1,8 +1,12 @@
-// noinspection CssUnresolvedCustomProperty
+import styled, { createGlobalStyle } from "styled-components";
 
-import styled, { createGlobalStyle, keyframes } from "styled-components";
+type Theme = {
+	[key: string]: string;
+	"--primary-color": string;
+	"--secondary-color": string;
+};
 
-export const LightTheme = {
+export const LightTheme: Theme = {
 	background: "linear-gradient(to bottom, #87ceeb, #f0f8ff) no-repeat", // Light blue gradient for daytime sky
 	"--primary-color": "rgba(255, 255, 255, 0.9)", // Light card background
 	"--secondary-color": "rgba(240, 240, 240, 0.9)", // Slightly darker light gray for contrast
@@ -12,7 +16,7 @@ export const LightTheme = {
 	iconColor: "#333333",
 };
 
-export const DarkTheme = {
+export const DarkTheme: Theme = {
 	background: "linear-gradient(to bottom, #2b2d42, #3a3a55) no-repeat", // Darker gradient for night sky
 	"--primary-color": "rgba(45, 45, 58, 0.85)", // Dark gray card background
 	"--secondary-color": "rgba(60, 60, 75, 0.85)", // Slightly lighter dark gray for contrast
@@ -61,4 +65,12 @@ export const SecondaryContainer = styled(Container)`
 	background: var(--secondary-color);
 	padding: 5px;
 	box-shadow: 5px 5px 4px rgba(0, 0, 0, 0.3);
+`;
+
+export const InfoChart = styled(SecondaryContainer)`
+	position: relative;
+	margin: 10px;
+	h3 {
+		color: lightslategrey;
+	}
 `;

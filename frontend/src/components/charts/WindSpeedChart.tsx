@@ -23,6 +23,7 @@ const WindSpeedChart = ({
 				strokeColor: "white",
 				strokeWith: 2,
 				useGradient: true,
+				usePadding: true,
 				gradientColors: [
 					"#b0e0e6", // Light blue for calm (0 m/s)
 					"#7ec8e3", // Sky blue (3 m/s)
@@ -36,7 +37,7 @@ const WindSpeedChart = ({
 					"#800080", // Dark purple for extreme wind (25+ m/s)
 				],
 				gradientRange: [0, 25],
-				suffix: "m/s",
+				suffix: data?.units.windSpeed ?? "m/s",
 				dot: true,
 			}}
 		/>

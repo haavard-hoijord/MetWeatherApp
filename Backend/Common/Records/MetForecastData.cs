@@ -2,6 +2,8 @@
 using System.Text.Json.Serialization;
 using Internal.Records;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 //JsonPropertyName is used to mark properties to be deserialized with System.text.json
 //JsonProperty is used to mark properties to be serialized with Newtonsoft.Json
@@ -24,6 +26,55 @@ namespace Common.Records
 
 namespace Internal.Records
 {
+	//Used to merge the json properties of two classes into one
+	public record Merged<T1, T2>([property: Newtonsoft.Json.JsonIgnore] T1 First, [property: Newtonsoft.Json.JsonIgnore] T2 Second)
+	{
+		[Newtonsoft.Json.JsonExtensionData]
+		private Dictionary<string, object?> ExtensionData
+		{
+			get
+			{
+				var data = new Dictionary<string, object?>();
+
+				// Use globally configured JsonSerializerSettings
+				var serializerSettings = JsonConvert.DefaultSettings?.Invoke() ?? new JsonSerializerSettings();
+				var namingStrategy = (serializerSettings.ContractResolver as DefaultContractResolver)?.NamingStrategy ?? new DefaultNamingStrategy();
+
+				// Add properties from First
+				foreach (var prop in typeof(T1).GetProperties())
+				{
+					var key = namingStrategy.GetPropertyName(prop.Name, false); // Apply naming strategy
+					var value = prop.GetValue(First);
+
+					if (value == null)
+						continue;
+
+					var serializedValue = JsonConvert.SerializeObject(value, serializerSettings);
+					data[key] = JsonConvert.DeserializeObject(serializedValue, serializerSettings);
+				}
+
+				// Add properties from Second
+				if (Second != null)
+				{
+					foreach (var prop in typeof(T2).GetProperties())
+					{
+						var key = namingStrategy.GetPropertyName(prop.Name, false); // Apply naming strategy
+						var value = prop.GetValue(Second);
+
+						if (value == null)
+							continue;
+
+						var serializedValue = JsonConvert.SerializeObject(value, serializerSettings);
+						data[key] = JsonConvert.DeserializeObject(serializedValue, serializerSettings);
+					}
+				}
+
+				return data;
+			}
+		}
+		public object? this[string propertyName] => ExtensionData.GetValueOrDefault(propertyName);
+	}
+
 	public record MetForecastProperties(
 		[property: JsonPropertyName("meta")] MetForecastInlineModel Meta,
 		[property: JsonPropertyName("timeseries")] MetForecastTimeStep[] TimeSteps
@@ -35,8 +86,12 @@ namespace Internal.Records
 		[property: JsonPropertyName("data")] MetForecastData Data
 	)
 	{
-		[JsonProperty]
-		public MetForecastInstantDetails Details => Data.Instant.Details;
+		[JsonProperty] //Merges the properties of InstantDetails and ForecastDetails into one object, to not have to access them separately
+		public Merged<MetForecastInstantDetails, MetForecastTimePeriodDetails?> Details => new(InstantDetails, ForecastDetails);
+
+		public MetForecastInstantDetails InstantDetails => Data.Instant.Details;
+
+		public MetForecastTimePeriodDetails? ForecastDetails => Data.Next1Hours?.Details;
 
 		[JsonProperty]
 		public string? SymbolCode => Data.Next1Hours?.Summary.SymbolCode;

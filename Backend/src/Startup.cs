@@ -48,18 +48,22 @@ public class Startup(IConfiguration configuration)
 
 		services
 			.AddControllers()
-			.AddNewtonsoftJson(options =>
-			{
-				options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-				options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-				options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-			})
+			.AddNewtonsoftJson()
 			.AddJsonOptions(options =>
 			{
 				options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 				options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 				options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
 			});
+
+		// Ensure JsonConvert uses the same settings globally
+		JsonConvert.DefaultSettings = () =>
+			new JsonSerializerSettings
+			{
+				ContractResolver = new CamelCasePropertyNamesContractResolver(),
+				NullValueHandling = NullValueHandling.Ignore,
+				DefaultValueHandling = DefaultValueHandling.Ignore,
+			};
 
 		services.AddMemoryCache();
 

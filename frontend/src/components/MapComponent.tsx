@@ -18,13 +18,16 @@ import {
 	SplitLayout,
 } from "@googlemaps/extended-component-library/react";
 import styled, { useTheme } from "styled-components";
+import { useTranslation } from "react-i18next";
 
 type HomePageMapProps = {
 	setLocation: (location: google.maps.places.Place) => void;
+	setLoading: (loading: boolean) => void;
 };
 
-const MapComponent = ({ setLocation }: HomePageMapProps) => {
+const MapComponent = ({ setLocation, setLoading }: HomePageMapProps) => {
 	const theme = useTheme();
+	const { t } = useTranslation();
 
 	const [markerPosition, setMarkerPosition] =
 		useState<google.maps.LatLngAltitude>(() => {
@@ -48,10 +51,6 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 	const [place, setPlace] = useState<google.maps.places.Place | undefined>(
 		undefined
 	);
-
-	useEffect(() => {
-		localStorage.setItem("place", JSON.stringify(place));
-	}, [place]);
 
 	const [placeService, setPlaceService] =
 		useState<google.maps.places.PlacesService | null>();
@@ -126,9 +125,14 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 	let map = useMap();
 
 	useEffect(() => {
-		if (!apiIsLoaded || !map) return;
+		if (!apiIsLoaded || !map) {
+			setLoading(true);
+			return;
+		}
 		// @ts-ignore
 		let placesService = new google.maps.places.PlacesService(map);
+
+		setLoading(false);
 
 		setPlaceService(placesService);
 		setGeoCoder(new google.maps.Geocoder());
@@ -216,7 +220,7 @@ const MapComponent = ({ setLocation }: HomePageMapProps) => {
 							>
 								<div slot="action">
 									<PlaceDirectionsButton slot="action" variant="filled">
-										Directions
+										{t("directions")}
 									</PlaceDirectionsButton>
 								</div>
 							</PlaceOverview>

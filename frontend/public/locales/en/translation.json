@@ -8,10 +8,12 @@
   "chart.temperature": "Temperature",
   "chart.windSpeed": "Wind speed",
   "chart.precipitation": "Precipitation",
-  "chart.pressure": "Pressure",
+  "chart.airPressure": "Air pressure",
+  "chart.humidity": "Humidity",
   "chart.tidalWaterLevel": {
     "title": "Tidal water level",
     "harbor": "> Harbor: {{harbor}}"
   },
-  "timeRange": "Time range"
+  "timeRange": "Time range",
+  "directions": "Directions"
 }
