@@ -1,9 +1,13 @@
 import styled, { createGlobalStyle } from "styled-components";
 
 type Theme = {
-	[key: string]: string;
+	background: string;
 	"--primary-color": string;
 	"--secondary-color": string;
+	textColor: string;
+	theme: string;
+	borderColor: string;
+	iconColor: string;
 };
 
 export const LightTheme: Theme = {
@@ -29,7 +33,7 @@ export const DarkTheme: Theme = {
 const GlobalStyle = createGlobalStyle`
 		#root, :root{
         --primary-color: ${({ theme }) => theme["--primary-color"]};
-        --secondary-color: ${({ theme }) => theme["--secondary-color"]};
+        --secondary-color: ${({ theme }): Theme => theme["--secondary-color"]};
 		}
 		#root {
         margin: 0;
@@ -37,8 +41,8 @@ const GlobalStyle = createGlobalStyle`
         font-family: Arial, sans-serif;
 
         height: 100%;
-        background: ${({ theme }) => theme.background};
-        color: ${({ theme }) => theme.textColor};
+        background: ${({ theme }): Theme => theme.background};
+        color: ${({ theme }): Theme => theme.textColor};
     }
 
     h2 {
