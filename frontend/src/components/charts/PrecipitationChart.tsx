@@ -30,9 +30,9 @@ const PrecipitationChart = ({
 					"#6a1b9a", // Purple (very heavy rain)
 				],
 				gradientRange: [0, 50],
-				dot: true,
+				showDot: true,
 				suffix: data?.units.precipitationAmount ?? "mm",
-				usePadding: true,
+				useChartPadding: true,
 			}}
 		/>
 	);

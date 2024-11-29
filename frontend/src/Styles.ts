@@ -32,7 +32,7 @@ export const DarkTheme: Theme = {
 
 const GlobalStyle = createGlobalStyle`
 		#root, :root{
-        --primary-color: ${({ theme }) => theme["--primary-color"]};
+        --primary-color: ${({ theme }): Theme => theme["--primary-color"]};
         --secondary-color: ${({ theme }): Theme => theme["--secondary-color"]};
 		}
 		#root {

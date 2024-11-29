@@ -30,11 +30,11 @@ const CloudCoverageChart = ({
 					"#505050", // Dark gray (80% coverage)
 					"#2b2b2b", // Very dark gray (complete overcast, 100%)
 				],
-				yAxisDomain: [0, 100],
+				yAxisRange: [0, 100],
 				gradientRange: [0, 100],
-				dot: true,
+				showDot: true,
 				suffix: data?.units.cloudAreaFraction ?? "%",
-				usePadding: true,
+				useChartPadding: true,
 			}}
 		/>
 	);

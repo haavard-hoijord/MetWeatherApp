@@ -25,16 +25,21 @@ type ChartInfo = {
 	useGradient: boolean;
 	gradientColors?: string[];
 	gradientRange?: [number, number];
-	yAxisDomain?: [number, number];
+	yAxisRange?: [number, number];
 	suffix?: string;
-	formatter?: (data: any) => string;
+	formatter?: (data: number) => string;
 	subTitle?: string;
 	disableTooltip?: boolean;
 	disableYAxis?: boolean;
 	disableXAxis?: boolean;
-	dot?: boolean;
-	usePadding?: boolean;
-	label?: (x: any, y: any, value: any, index: any) => ReactElement;
+	showDot?: boolean;
+	useChartPadding?: boolean;
+	label?: (
+		x: number,
+		y: number,
+		value: any,
+		index: number
+	) => React.ReactElement;
 };
 
 const BaseChart = ({
@@ -79,9 +84,9 @@ const BaseChart = ({
 		...data.map((d) => getNestedValue(d, info.dataKey))
 	);
 
-	const min = Math.min(info.yAxisDomain?.[0] ?? 0, minValue);
-	const max = Math.max(info.yAxisDomain?.[1] ?? 0, maxValue);
-	let domain = info.yAxisDomain ? [min, max] : ["auto", "auto"];
+	const min = Math.min(info.yAxisRange?.[0] ?? 0, minValue);
+	const max = Math.max(info.yAxisRange?.[1] ?? 0, maxValue);
+	let domain = info.yAxisRange ? [min, max] : ["auto", "auto"];
 	let gradient = (info.useGradient ? info.gradientColors : undefined) ?? [
 		"white",
 		"white",
@@ -139,7 +144,7 @@ const BaseChart = ({
 									x2="1"
 									y2="0"
 								>
-									{inRangeColors.map(({ color, value }, index) => {
+									{inRangeColors.map(({ color }, index) => {
 										const offset = (index / (inRangeColors.length - 1)) * 100; // Evenly distribute offsets from 0% to 100%
 										const clampedOffset = Math.max(0, Math.min(100, offset));
 
@@ -158,11 +163,11 @@ const BaseChart = ({
 
 						{!info.disableXAxis && (
 							<XAxis
-								padding={info.usePadding ? { left: 35, right: 35 } : {}}
+								padding={info.useChartPadding ? { left: 35, right: 35 } : {}}
 								dataKey={info.timeKey}
 								stroke={theme.textColor}
 								ticks={dailyTicks}
-								tickFormatter={(value) => {
+								tickFormatter={(value: number) => {
 									const date = new Date(value);
 									return `${date.getDate()}. ${date.toLocaleDateString("default", { month: "short" })}`;
 								}}
@@ -178,13 +183,13 @@ const BaseChart = ({
 						)}
 						{!info.disableXAxis && (
 							<XAxis
-								padding={info.usePadding ? { left: 35, right: 35 } : {}}
+								padding={info.useChartPadding ? { left: 35, right: 35 } : {}}
 								minTickGap={20}
 								dy={5}
 								stroke={theme.textColor}
 								dataKey={info.timeKey}
 								interval="equidistantPreserveStart"
-								tickFormatter={(value, index) => {
+								tickFormatter={(value: number) => {
 									const date = new Date(value);
 									return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
 								}}
@@ -205,7 +210,7 @@ const BaseChart = ({
 
 						{!info.disableYAxis && (
 							<YAxis
-								padding={info.usePadding ? { top: 20, bottom: 20 } : {}}
+								padding={info.useChartPadding ? { top: 20, bottom: 20 } : {}}
 								tickFormatter={
 									info.formatter
 										? info.formatter
@@ -230,14 +235,21 @@ const BaseChart = ({
 							strokeWidth={info.strokeWith ?? 3}
 							name={info.name}
 							type={"monotone"}
-							dot={info.dot}
+							dot={info.showDot}
 							xAxisId="time"
 						>
 							{info.label && (
 								<LabelList
 									dataKey={info.dataKey}
 									content={({ x, y, value, index }) => {
-										return info.label ? info.label(x, y, value, index) : null;
+										return info.label
+											? info.label(
+													x as number,
+													y as number,
+													value,
+													index as number
+												)
+											: null;
 									}}
 								/>
 							)}

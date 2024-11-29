@@ -48,7 +48,7 @@ const TidalChart = ({
 				subTitle: harbor
 					? t("chart.tidalWaterLevel.harbor", { harbor: harbor.name })
 					: "",
-				yAxisDomain: [-0.1, 0.1],
+				yAxisRange: [-0.1, 0.1],
 				gradientRange: [-0.2, 0.02],
 				formatter: (value: any) =>
 					`${Math.abs(value) > 100 ? `${parseFloat((value / 100).toFixed(2))}m` : `${parseFloat(value.toFixed(2))}cm`}`,

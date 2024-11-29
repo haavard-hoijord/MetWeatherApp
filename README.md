@@ -7,6 +7,9 @@ The frontend is made using React + Vite.js and uses the backend to retrieve the 
 
 # Examples
 Preview of the webapp
+
+A version of the web app modified to use the Met.no api directly without the backend can be found [here](https://haavard-hoijord.github.io/MetWeatherApp/)
+
 ![Website preview](https://github.com/haavard-hoijord/MetWeatherApp/blob/main/examples/Example1.png?raw=true)
 
 [Swagger definition file](examples/swagger.json)

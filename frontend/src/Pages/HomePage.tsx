@@ -2,7 +2,7 @@ import { Page } from "../types/Page";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import MapComponent from "../components/MapComponent.tsx";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Harbor } from "../types/Harbor";
 import { TidalWater } from "../types/TidalWater";
 import TemperatureChart from "../components/charts/TemperatureChart.tsx";
@@ -18,12 +18,22 @@ import { useTranslation } from "react-i18next";
 import PrecipitationChart from "../components/charts/PrecipitationChart.tsx";
 import HumidityChart from "../components/charts/HumidityChart.tsx";
 import AirPressureChart from "../components/charts/AirPressureChart.tsx";
+import handleFrontendFallback from "../FrontendFallback.tsx";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+let isBackendAvailable = true;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
+
+	fetchData<Harbor[]>({
+		url: `/harbor`,
+		method: "GET",
+	}).then((response) => {
+		isBackendAvailable = !!response;
+	});
 
 	const [location, setLocation] = useState<google.maps.places.Place>(() => {
 		const savedLocation = localStorage.getItem("location");
@@ -95,35 +105,90 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 		return () => clearInterval(interval);
 	}, []);
 
+	const api = axios.create({
+		baseURL: `${apiUrl}`, // Backend base URL
+		timeout: 5000, // Adjust as needed
+	});
+
+	// Interceptor for handling errors
+	api.interceptors.response.use(
+		(response) => {
+			// Reset the flag if the backend responds successfully
+			isBackendAvailable = true;
+			return response;
+		},
+		async (error) => {
+			if (!error.response) {
+				console.warn("Backend unavailable, using frontend fallback.");
+				isBackendAvailable = false; // Toggle to fallback globally
+				const frontendFallback = handleFrontendFallback(error.config);
+				return Promise.resolve({ data: frontendFallback });
+			}
+
+			return Promise.reject(error); // Let other errors pass through
+		}
+	);
+
 	const fetchInfo = async (pos: { lat: number; lng: number }) => {
 		try {
-			const response = await axios.get(
-				`${apiUrl}/harbor/closest?latitude=${pos.lat}&longitude=${pos.lng}`,
-				{ timeout: 10000 }
-			);
-			const harbor: Harbor = response.data as Harbor;
+			const response = await fetchData<Harbor>({
+				url: `/harbor/closest?latitude=${pos.lat}&longitude=${pos.lng}`,
+				method: "GET",
+			});
+			const harbor: Harbor = response!.data as Harbor;
 			setClosestHarbor(harbor);
 
-			if (harbor) {
-				const tidalResponse = await axios.get(
-					`${apiUrl}/tidalwater?harborId=${harbor.id}`,
-					{ timeout: 10000 }
-				);
-				const tidalWater: TidalWater = tidalResponse.data as TidalWater;
+			if (harbor && harbor.id) {
+				const tidalResponse = await fetchData<TidalWater>({
+					url: `/tidalwater?harbor=${harbor.id}`,
+					method: "GET",
+				});
+				const tidalWater: TidalWater = tidalResponse!.data as TidalWater;
 				setTidalData(tidalWater);
 			}
 
-			const weatherResponse = await axios.get(
-				`${apiUrl}/forecast?latitude=${pos.lat}&longitude=${pos.lng}`,
-				{ timeout: 10000 }
-			);
-			const weather = weatherResponse.data as WeatherData;
+			const weatherResponse = await fetchData<WeatherData>({
+				url: `/forecast?latitude=${pos.lat}&longitude=${pos.lng}`,
+				method: "GET",
+			});
+			const weather = weatherResponse!.data as WeatherData;
 			setWeatherData(weather);
 		} catch (err: any) {
 			console.error(err.message);
 			setError(err.message);
 		}
 	};
+
+	async function fetchData<T>(
+		config: AxiosRequestConfig
+	): Promise<AxiosResponse<T> | undefined> {
+		if (!isBackendAvailable) {
+			// Use fallback data if the backend is unavailable
+			const fallbackData: T = await handleFrontendFallback<T>(config);
+			if (fallbackData) {
+				return {
+					data: fallbackData,
+					status: 200,
+					statusText: "OK",
+					headers: {},
+					config,
+				} as AxiosResponse<T>;
+			}
+
+			console.error("No fallback data available");
+		} else {
+			try {
+				// Attempt to fetch from the backend
+				return await api.request<T>(config);
+			} catch (error: any) {
+				if (axios.isAxiosError(error)) {
+					console.error("Failed to fetch:", error.message);
+				} else {
+					console.error("Unexpected error:", (error as Error).message);
+				}
+			}
+		}
+	}
 
 	type locFunc = {
 		lat: () => number;

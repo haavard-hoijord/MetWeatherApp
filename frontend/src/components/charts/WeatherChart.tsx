@@ -27,10 +27,10 @@ const WeatherChart = ({
 					strokeWith: 3,
 					useGradient: false,
 					disableTooltip: true,
-					usePadding: true,
+					useChartPadding: true,
 					suffix: data?.units.airTemperature === "celsius" ? "°C" : "°F",
-					dot: true,
-					yAxisDomain: [
+					showDot: true,
+					yAxisRange: [
 						Math.min(
 							0,
 							...(data?.timeSteps.map((s) => s.details.airTemperature) ?? [])

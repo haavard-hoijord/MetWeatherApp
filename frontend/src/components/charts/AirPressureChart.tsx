@@ -30,9 +30,9 @@ const AirPressureChart = ({
 					"#000000", // Black (high pressure)
 				],
 				gradientRange: [950, 1050],
-				dot: true,
+				showDot: true,
 				suffix: data?.units.airPressureAtSeaLevel ?? "hPa",
-				usePadding: true,
+				useChartPadding: true,
 			}}
 		/>
 	);

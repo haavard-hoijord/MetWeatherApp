@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 WeatherInfo.sln.DotSettings.user
+.env.local
+.env

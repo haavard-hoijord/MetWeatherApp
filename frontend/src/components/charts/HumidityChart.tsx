@@ -23,17 +23,17 @@ const HumidityChart = ({
 				strokeWith: 2,
 				useGradient: true,
 				gradientColors: [
-					"#fffde7", // Light yellow (very dry)
-					"#fff176", // Yellow (dry)
+					"#fff176", // Yellow (very dry)
+					"#fffdc9", // Light yellow (dry)
 					"#aed581", // Light green (moderate humidity)
 					"#4caf50", // Green (humid)
 					"#1e88e5", // Dark blue (very humid)
 				],
 				gradientRange: [0, 100],
-				yAxisDomain: [0, 100],
-				dot: true,
+				yAxisRange: [0, 100],
+				showDot: true,
 				suffix: data?.units.relativeHumidity ?? "%",
-				usePadding: true,
+				useChartPadding: true,
 			}}
 		/>
 	);

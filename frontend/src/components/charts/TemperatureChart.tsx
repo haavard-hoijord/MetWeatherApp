@@ -21,7 +21,7 @@ const TemperatureChart = ({
 				id: "temperature",
 				strokeColor: "",
 				strokeWith: 3,
-				usePadding: true,
+				useChartPadding: true,
 				useGradient: true,
 				gradientColors: [
 					"#3b80ff", // Cold blue, around -10°C
@@ -37,7 +37,7 @@ const TemperatureChart = ({
 					"#b50390", // Deep pink, around 50°C
 					"#000000", // Black, above 50°C
 				],
-				yAxisDomain: [0, 30],
+				yAxisRange: [0, 30],
 				gradientRange: [-10, 50],
 				suffix: data?.units.airTemperature === "celsius" ? "°C" : "°F",
 			}}

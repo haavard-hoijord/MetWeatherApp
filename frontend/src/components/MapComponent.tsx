@@ -102,13 +102,7 @@ const MapComponent = ({ setLocation, setLoading }: HomePageMapProps) => {
 						id: r.results[0].place_id,
 					});
 					await place.fetchFields({
-						fields: [
-							"displayName",
-							"formattedAddress",
-							"location",
-							"id",
-							"editorialSummary",
-						],
+						fields: ["displayName", "formattedAddress", "location", "id"],
 					});
 
 					focusPlace(map!, place);
@@ -157,13 +151,7 @@ const MapComponent = ({ setLocation, setLoading }: HomePageMapProps) => {
 								id: placeResult.place_id,
 							});
 							await place.fetchFields({
-								fields: [
-									"displayName",
-									"formattedAddress",
-									"location",
-									"id",
-									"editorialSummary",
-								],
+								fields: ["displayName", "formattedAddress", "location", "id"],
 							});
 
 							focusPlace(map!, place);

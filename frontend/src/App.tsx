@@ -67,7 +67,7 @@ function App() {
 				{error && <ErrorModal error={error} setError={setError} />}
 				<Routes>
 					<Route
-						path="/"
+						path="/MetWeatherApp"
 						element={
 							<HomePage
 								setError={setError}
@@ -156,31 +156,22 @@ const ErrorModal = ({
 	error: string;
 }) => {
 	return (
-		<ErrorModalContainer>
-			<h2 onClick={() => setError(null)}>{error}</h2>
+		<ErrorModalContainer onClick={() => setError(null)}>
+			{error}
 		</ErrorModalContainer>
 	);
 };
 
-const ErrorModalContainer = styled.div`
-	position: absolute;
-	width: 100%;
-	height: 90vh;
-	display: flex;
-	justify-content: center;
-	z-index: 1000;
-	backdrop-filter: blur(3px) brightness(50%);
-
-	h2 {
-		position: absolute;
-		bottom: 20px;
-		left: 20px;
-		background: gray;
-		padding: 20px;
-		border-radius: 15px;
-		color: red;
-		max-width: 30%;
-		word-wrap: break-word;
-		cursor: pointer;
-	}
+const ErrorModalContainer = styled.h2`
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	background: gray;
+	padding: 20px;
+	border-radius: 15px;
+	color: red;
+	max-width: 30%;
+	word-wrap: break-word;
+	cursor: pointer;
+	z-index: 2000;
 `;

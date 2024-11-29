@@ -1,14 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import Terminal from "vite-plugin-terminal";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    Terminal({
-      console: "terminal",
-      output: ["terminal", "console"],
-    }),
-  ],
+	plugins: [react()],
+	base: "/MetWeatherApp/",
+	server: {
+		proxy: {
+			"/met": {
+				target: "https://api.met.no",
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/met/, ""), // Strip `/api` prefix
+			},
+		},
+	},
 });

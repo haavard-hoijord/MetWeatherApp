@@ -9,9 +9,4 @@ export type TidalWaterValue = {
 	surge: number;
 	tide: number;
 	total: number;
-	p0: number;
-	p25: number;
-	p50: number;
-	p75: number;
-	p100: number;
 };

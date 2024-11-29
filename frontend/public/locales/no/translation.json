@@ -9,7 +9,7 @@
   "chart.windSpeed": "Vindstyrke",
   "chart.precipitation": "Nedbør",
   "chart.airPressure": "Lufttrykk",
-  "chart.humidity": "Fuktighet",
+  "chart.humidity": "Luftfuktighet",
   "chart.tidalWaterLevel": {
     "title": "Tidevannsnivå",
     "harbor": "> Havn: {{harbor}}"
