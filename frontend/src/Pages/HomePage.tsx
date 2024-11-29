@@ -23,17 +23,11 @@ import handleFrontendFallback from "../FrontendFallback.tsx";
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 let isBackendAvailable = true;
+let hasCheckedBackend = false;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-
-	fetchData<Harbor[]>({
-		url: `/harbor`,
-		method: "GET",
-	}).then((response) => {
-		isBackendAvailable = !!response;
-	});
 
 	const [location, setLocation] = useState<google.maps.places.Place>(() => {
 		const savedLocation = localStorage.getItem("location");
@@ -130,6 +124,20 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	);
 
 	const fetchInfo = async (pos: { lat: number; lng: number }) => {
+		if (!hasCheckedBackend) {
+			const response = await fetchData<Harbor[]>({
+				url: `/harbor`,
+				method: "GET",
+				timeout: 1000,
+			});
+
+			if (response?.status !== 200) {
+				isBackendAvailable = false;
+			}
+
+			hasCheckedBackend = true;
+		}
+
 		try {
 			const response = await fetchData<Harbor>({
 				url: `/harbor/closest?latitude=${pos.lat}&longitude=${pos.lng}`,
@@ -176,7 +184,7 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 			}
 
 			console.error("No fallback data available");
-		} else {
+		} else if (api) {
 			try {
 				// Attempt to fetch from the backend
 				return await api.request<T>(config);
@@ -265,8 +273,9 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	];
 
 	const [chartOrder, setChartOrder] = useState(() => {
-		const savedOrder =
-			JSON.parse(localStorage.getItem("chartOrder") ?? "") || [];
+		const savedOrder = localStorage.getItem("chartOrder")
+			? JSON.parse(localStorage.getItem("chartOrder")!)
+			: [];
 		return [
 			...savedOrder
 				.map((id: any) => allCharts.find((chart) => chart.id === id))

@@ -181,7 +181,6 @@ class TidalWaterService {
 				{
 					responseType: "text",
 					headers: {
-						Origin: "http://localhost:5173",
 						"User-Agent":
 							"DemoWeatherApp/1.0(+https://github.com/haavard-hoijord/MetWeatherApp/)",
 					},
