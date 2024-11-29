@@ -125,17 +125,21 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 
 	const fetchInfo = async (pos: { lat: number; lng: number }) => {
 		if (!hasCheckedBackend) {
-			const response = await fetchData<Harbor[]>({
-				url: `/harbor`,
-				method: "GET",
-				timeout: 1000,
-			});
+			hasCheckedBackend = true;
 
-			if (response?.status !== 200) {
+			try {
+				const response = await fetchData<Harbor[]>({
+					url: `/harbor`,
+					method: "GET",
+					timeout: 1000,
+				});
+				if (response?.status !== 200) {
+					isBackendAvailable = false;
+				}
+			} catch (error: any) {
+				console.error(error.message);
 				isBackendAvailable = false;
 			}
-
-			hasCheckedBackend = true;
 		}
 
 		try {
