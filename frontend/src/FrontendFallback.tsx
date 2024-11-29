@@ -16,7 +16,7 @@ async function handleFrontendFallback<T>(
 		const longitude = parseFloat(params.get("longitude") || "");
 
 		const response: AxiosResponse = await axios.get(
-			`/met/weatherapi/locationforecast/2.0/complete?lat=${latitude}&lon=${longitude}`,
+			`https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${latitude}&lon=${longitude}`,
 			{
 				headers: {
 					"User-Agent":
@@ -46,12 +46,13 @@ async function handleFrontendFallback<T>(
 
 	if (url!.includes("/harbor/closest")) {
 		const response: AxiosResponse = await axios.get(
-			"/met/weatherapi/tidalwater/1.1/locations",
+			"https://api.met.no/weatherapi/tidalwater/1.1/locations",
 			{
 				headers: {
 					"User-Agent":
 						"DemoWeatherApp/1.0 (+https://github.com/haavard-hoijord/MetWeatherApp/)",
 				},
+				withCredentials: false,
 				timeout: 10000,
 			}
 		);
@@ -177,7 +178,7 @@ class TidalWaterService {
 
 		try {
 			response = await axios.get(
-				`/met/weatherapi/tidalwater/1.1/?harbor=${harborId}`,
+				`https://api.met.no/weatherapi/tidalwater/1.1/?harbor=${harborId}`,
 				{
 					responseType: "text",
 					headers: {

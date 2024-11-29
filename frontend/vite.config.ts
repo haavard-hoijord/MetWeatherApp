@@ -5,13 +5,4 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
 	plugins: [react()],
 	base: "/MetWeatherApp/",
-	server: {
-		proxy: {
-			"/met": {
-				target: "https://api.met.no",
-				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/met/, ""), // Strip `/api` prefix
-			},
-		},
-	},
 });
