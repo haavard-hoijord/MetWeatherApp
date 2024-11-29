@@ -22,8 +22,8 @@ import handleFrontendFallback from "../FrontendFallback.tsx";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-let isBackendAvailable = true;
-let hasCheckedBackend = false;
+const debug = import.meta.env.MODE === "development";
+let isBackendAvailable = !debug;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	const { t } = useTranslation();
@@ -124,24 +124,6 @@ const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	);
 
 	const fetchInfo = async (pos: { lat: number; lng: number }) => {
-		if (!hasCheckedBackend) {
-			hasCheckedBackend = true;
-
-			try {
-				const response = await fetchData<Harbor[]>({
-					url: `/harbor`,
-					method: "GET",
-					timeout: 1000,
-				});
-				if (response?.status !== 200) {
-					isBackendAvailable = false;
-				}
-			} catch (error: any) {
-				console.error(error.message);
-				isBackendAvailable = false;
-			}
-		}
-
 		try {
 			const response = await fetchData<Harbor>({
 				url: `/harbor/closest?latitude=${pos.lat}&longitude=${pos.lng}`,
