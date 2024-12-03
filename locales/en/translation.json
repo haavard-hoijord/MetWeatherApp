@@ -15,5 +15,6 @@
     "harbor": "> Harbor: {{harbor}}"
   },
   "timeRange": "Time range",
-  "directions": "Directions"
+  "directions": "Directions",
+  "demoText": "Demo - Not realtime Data"
 }
