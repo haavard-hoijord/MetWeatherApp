@@ -6,27 +6,27 @@ async function handleFrontendFallback<T>(
 	const { url, method, data } = config;
 
 	// Forecast fallback
-	if (url!.includes("/Forecast")) {
+	if (url!.includes("/forecast")) {
 		return (await fetchFromFallback<T>("/Forecast")) as T;
 	}
 
 	// Harbor closest fallback
-	if (url!.includes("/Harbor/closest")) {
+	if (url!.includes("/harbor/closest")) {
 		return (await fetchFromFallback<T>("/Harbor/closest")) as T;
 	}
 
 	// Tidalwater fallback
-	if (url!.includes("/Tidalwater")) {
+	if (url!.includes("/tidalwater")) {
 		return (await fetchFromFallback<T>("/Tidalwater")) as T;
 	}
 
 	return undefined as T;
 }
-
 async function fetchFromFallback<T>(endpoint: string): Promise<T> {
 	try {
-		// Assume fallback JSON is in the `public` directory under `fallback-data.json`
-		const response = await fetch(`/fallback-data.json`);
+		// Fetch the JSON file from the `public` directory
+		const url = `${import.meta.env.BASE_URL}fallback-data.json`;
+		const response = await fetch(url);
 		if (!response.ok) {
 			throw new Error(`Failed to fetch fallback data: ${response.statusText}`);
 		}
@@ -38,6 +38,7 @@ async function fetchFromFallback<T>(endpoint: string): Promise<T> {
 			throw new Error(`No fallback data available for endpoint: ${endpoint}`);
 		}
 
+		// @ts-ignore
 		return fallbackData[endpoint] as T;
 	} catch (error) {
 		console.error(`Error fetching fallback data for ${endpoint}:`, error);

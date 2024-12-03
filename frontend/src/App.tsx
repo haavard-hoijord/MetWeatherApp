@@ -9,6 +9,7 @@ import styled, {
 } from "styled-components";
 import GlobalStyle, { LightTheme, DarkTheme } from "./Styles";
 import i18n from "./i18n.ts";
+import { useTranslation } from "react-i18next";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const isDemo = import.meta.env.VITE_IS_DEMO;
@@ -55,17 +56,18 @@ function App() {
 	const changePage = () => {
 		setError(null);
 	};
+	const { t } = useTranslation();
 
 	return (
 		<ThemeProvider theme={useDarkTheme ? LightTheme : DarkTheme}>
 			<GlobalStyle />
 			<BrowserRouter>
-				{isDemo && <DemoBanner>Demo</DemoBanner>}
 				<Navbar
 					changePage={changePage}
 					setDarkTheme={setDarkTheme}
 					useDarkTheme={useDarkTheme}
 				/>
+				{isDemo && <DemoBanner>{t("demoText")}</DemoBanner>}
 				{error && <ErrorModal error={error} setError={setError} />}
 				<Routes>
 					<Route
@@ -90,14 +92,14 @@ function App() {
 export default App;
 
 const DemoBanner = styled.div`
-	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 50px;
-	background: red;
+	background: indianred;
 	color: white;
 	text-align: center;
+	line-height: 50px;
 	font-size: 20px;
 `;
 

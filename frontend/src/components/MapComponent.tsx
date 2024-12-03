@@ -134,34 +134,11 @@ const MapComponent = ({ setLocation, setLoading }: HomePageMapProps) => {
 		if (markerPosition.lat !== 0 && markerPosition.lng !== 0) {
 			focusMap(map, markerPosition.lat, markerPosition.lng);
 			handleGeocode(markerPosition.lat ?? 0, markerPosition.lng ?? 0);
-		}
-
-		if (!location) {
-			placesService.textSearch(
-				{
-					query: "Bouvet Stavanger",
-					location: { lat: 58.91674, lng: 5.732428 },
-				},
-				async (results, status) => {
-					if (status === google.maps.places.PlacesServiceStatus.OK) {
-						const placeResult = results?.[0];
-						if (placeResult) {
-							const place = new google.maps.places.Place({
-								// @ts-ignore
-								id: placeResult.place_id,
-							});
-							await place.fetchFields({
-								fields: ["displayName", "formattedAddress", "location", "id"],
-							});
-
-							focusPlace(map!, place);
-						}
-					}
-				}
-			);
+		} else {
+			focusMap(map, 58.91674, 5.732428);
+			handleGeocode(58.91674, 5.732428);
 		}
 	}, [apiIsLoaded, map]);
-
 	const overlayLayoutRef = useRef<TOverlayLayout>(null);
 	const pickerRef = useRef<TPlacePicker>(null);
 

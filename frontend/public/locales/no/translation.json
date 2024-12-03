@@ -15,5 +15,6 @@
     "harbor": "> Havn: {{harbor}}"
   },
   "timeRange": "Tidsrom",
-  "directions": "Veibeskrivelse"
+  "directions": "Veibeskrivelse",
+  "demoText": "Demo - Ikke direkte Data"
 }
