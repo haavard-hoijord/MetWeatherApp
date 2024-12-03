@@ -11,6 +11,7 @@ import GlobalStyle, { LightTheme, DarkTheme } from "./Styles";
 import i18n from "./i18n.ts";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+const isDemo = import.meta.env.VITE_IS_DEMO;
 
 function App() {
 	const [useDarkTheme, setDarkTheme] = useState(() => {
@@ -59,6 +60,7 @@ function App() {
 		<ThemeProvider theme={useDarkTheme ? LightTheme : DarkTheme}>
 			<GlobalStyle />
 			<BrowserRouter>
+				{isDemo && <DemoBanner>Demo</DemoBanner>}
 				<Navbar
 					changePage={changePage}
 					setDarkTheme={setDarkTheme}
@@ -86,6 +88,18 @@ function App() {
 }
 
 export default App;
+
+const DemoBanner = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 50px;
+	background: red;
+	color: white;
+	text-align: center;
+	font-size: 20px;
+`;
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }

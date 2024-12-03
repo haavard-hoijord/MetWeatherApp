@@ -21,9 +21,8 @@ import AirPressureChart from "../components/charts/AirPressureChart.tsx";
 import handleFrontendFallback from "../FrontendFallback.tsx";
 
 export const google_api_key = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-const debug = import.meta.env.MODE === "development";
-let isBackendAvailable = !debug;
+const isDemo = import.meta.env.VITE_IS_DEMO;
+let isBackendAvailable = !isDemo;
 
 const HomePage = ({ setError, setLoading, loading, apiUrl }: Page) => {
 	const { t } = useTranslation();
