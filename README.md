@@ -1,40 +1,184 @@
 # MetWeatherApp
- A internal practice project for making a full solution of backend and frontend for a weather app.
 
- The backend is made with C# using Asp.Net which uses the Met.no api to retrieve json and plain text data.
- 
-The frontend is made using React + Vite.js and uses the backend to retrieve the weather data, the frontend also uses google maps api for location search and reverse geocoding. The frontend is written in Typescript.
+MetWeatherApp is a weather application that provides real-time weather information using the MET Norway Weather API. The frontend is built with TypeScript and React using Vite, and the backend is developed with C# and ASP.NET.
 
-# Examples
-Preview of the webapp
+## Table of Contents
 
-A version of the web app modified to use the Met.no api directly without the backend can be found [here](https://haavard-hoijord.github.io/MetWeatherApp/)
+- [Introduction](#introduction)
+- [Features](#features)
+- [Demo](#demo)
+- [Screenshots](#screenshots)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Frontend Setup](#frontend-setup)
+  - [Backend Setup](#backend-setup)
+- [Usage](#usage)
+- [Technologies Used](#technologies-used)
+- [API Reference](#api-reference)
+- [License](#license)
 
-![Website preview](https://github.com/haavard-hoijord/MetWeatherApp/blob/main/examples/Example1.png?raw=true)
+## Introduction
 
-[Swagger definition file](examples/swagger.json)
+MetWeatherApp delivers current weather data for any specified location. By leveraging the MET Norway Weather API, it provides users with accurate weather forecasts and conditions in a user-friendly web interface.
 
-# Libraries
-- Backend
-  - Asp.Net
-  - Newtonsoft.Json
-  - Swashbuckle.AspNetCore
-  
+## Features
 
-- Frontend
+- **Current Weather Data**: View real-time temperature, humidity, wind speed, and weather conditions.
+- **Location Search**: Search for weather information by city or coordinates.
+- **Interactive UI**: Responsive design built with React for a seamless user experience.
+- **Backend API**: A robust backend built with ASP.NET to handle API requests and data processing.
+
+## Demo
+
+A live demo of the application is available at:
+
+🔗 **[MetWeatherApp Demo](https://haavard-hoijord.github.io/MetWeatherApp/)**
+
+You can visit the link to experience the application without setting it up locally.
+
+## Screenshots
+
+![Home Screen](examples/Example1.png)
+
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- **Node.js** installed on your machine (for the frontend).
+- **.NET 6 SDK** or later installed (for the backend).
+- **Git** for cloning the repository.
+- An active internet connection to fetch data from the MET Norway API.
+
+## Installation
+
+### Frontend Setup
+
+1. **Navigate to the Frontend Directory**
+
+   ```bash
+   cd MetWeatherApp/frontend
+   ```
+
+2. **Install Dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**
+
+   - Create a `.env` file in the `frontend` directory.
+   - Add any necessary environment variables (if applicable).
+   - `VITE_GOOGLE_MAPS_API_KEY` & `VITE_API_URL`
+
+### Backend Setup
+
+1. **Navigate to the Backend Directory**
+
+   ```bash
+   cd MetWeatherApp/backend
+   ```
+
+2. **Restore Dependencies**
+
+   ```bash
+   dotnet restore
+   ```
+
+## Usage
+
+### Running the Application
+
+#### Start the Backend Server
+
+1. **Navigate to the Backend Directory**
+
+   ```bash
+   cd MetWeatherApp/backend
+   ```
+
+2. **Run the Backend**
+
+   ```bash
+   dotnet run
+   ```
+
+   The backend server should now be running on `https://localhost:44357/`.
+
+#### Start the Frontend Application
+
+1. **Navigate to the Frontend Directory**
+
+   ```bash
+   cd MetWeatherApp/frontend
+   ```
+
+2. **Run the Frontend**
+
+   ```bash
+   npm run dev
+   ```
+
+   The frontend application should now be running on `http://localhost:5173/MetWeatherApp/`.
+
+### Accessing the Application
+
+- Open your web browser and navigate to `http://localhost:5173/MetWeatherApp/` to use MetWeatherApp.
+
+## Technologies Used
+
+- **Frontend**:
+  - TypeScript
   - React
-  - Vite.js
+  - Vite
   - Axios
-  - Google Maps API
-    - Google Maps React (@vis.gl/react-google-maps)
-    - Google Maps Geocoding
-    - Google Maps Places
-    - @googlemaps/extended-component-library
-  - Material-UI
-  - Typescript
-  - Recharts
-  - Styled-components
-  - Sortablejs
-  - react-sortablejs
+  - Styled Components
+  - Google Maps
   - i18next
-  - react-i18next
+
+- **Backend**:
+  - C#
+  - ASP.NET Web API
+  - RESTful API principles
+
+- **APIs**:
+  - [MET Norway Weather API](https://api.met.no/)
+
+## API Reference
+
+The application uses the [MET Norway Weather API](https://api.met.no/) to fetch weather data.
+
+- **Endpoint**
+
+  ```http
+  GET https://api.met.no/weatherapi/locationforecast/2.0/complete
+  ```
+
+- **Parameters**
+
+  - `lat` - Latitude of the location (URL parameter)
+  - `lon` - Longitude of the location (URL parameter)
+  - `altitude` - Altitude of the location in meters (URL parameter)
+
+- **Headers**
+
+  - `User-Agent` - Required by MET Norway API policy (include app name and contact information)
+
+- **Example Request**
+
+  ```javascript
+  // Using Axios in the frontend
+  axios.get('https://api.met.no/weatherapi/locationforecast/2.0/complete', {
+    headers: {
+      'User-Agent': 'MetWeatherApp/1.0 (contact@example.com)'
+    },
+    params: {
+      lat: 60.10,
+      lon: 9.58,
+      altitude: 70
+    }
+  });
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
